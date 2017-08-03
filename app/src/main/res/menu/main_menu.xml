@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/menuSearch"
+        android:icon="@drawable/ic_search"
+        android:title="@string/buscar"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom|collapseActionView"
+        />
+    <item
+        android:id="@+id/menu_logout"
+        android:title="@string/cerrar_sesi_n"/>
+    <item
+        android:id="@+id/menu_refresh"
+        android:title="@string/refresh"/>
+    <item
+        android:id="@+id/menu_finalizar"
+        android:title="@string/finalizar"/>
+    <item
+        android:id="@+id/menu_estado_mercaderia"
+        android:title="@string/estado_de_mercader_a"/>
+</menu>

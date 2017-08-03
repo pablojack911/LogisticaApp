@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="4dp"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:weightSum="100"
+              android:baselineAligned="false">
+
+    <LinearLayout
+        android:id="@+id/layCodigoDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="75"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvCodigoArticulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0000000009376"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/tvDescripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CERV PALERMO RETORN 12x970 CC"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            tools:ignore="HardcodedText"/>
+    </LinearLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/input_layout_cantidad"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="25"
+        android:focusable="false">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/etCantidad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:hint="@string/bultos"
+            android:inputType="numberDecimal"
+            android:textAlignment="center"
+            android:text="1"
+            tools:ignore="HardcodedText"/>
+    </android.support.design.widget.TextInputLayout>
+    <!--<TextView-->
+        <!--android:id="@+id/tvImporteFinal"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_margin="4dp"-->
+        <!--android:layout_weight="25"-->
+        <!--android:text="$ 20766.8960"-->
+        <!--android:textAlignment="viewEnd"-->
+        <!--android:textAppearance="@style/TextAppearance.AppCompat"-->
+        <!--tools:ignore="HardcodedText"/>-->
+</LinearLayout>

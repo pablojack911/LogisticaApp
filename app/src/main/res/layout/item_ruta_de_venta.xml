@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/Lay"
+              android:layout_width="match_parent"
+              android:layout_height="104dp"
+              android:baselineAligned="false"
+              android:divider="?android:attr/listDivider"
+              android:gravity="center"
+              android:orientation="horizontal"
+              android:paddingBottom="8dp"
+              android:paddingTop="8dp"
+              android:weightSum="100">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="85"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/codigo_cliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="90000 - NOMBRE DEL CLIENTE o RAZON SOCIAL"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="16sp"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/domicilio_cliente"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="Av San Martin 4335"
+            android:textAppearance="@android:style/TextAppearance.Material"
+            android:textSize="14sp"
+            tools:ignore="HardcodedText"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:baselineAligned="false">
+
+            <RelativeLayout
+                android:id="@+id/relay_efectivo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/text_caption_efectivo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text="@string/efectivo"
+                    android:textColor="@color/efectivo"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/text_efectivo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/text_caption_efectivo"
+                    android:text=""
+                    android:textColor="@color/efectivo"/>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/relay_ctacte"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/relay_efectivo">
+
+                <TextView
+                    android:id="@+id/text_caption_ctacte"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text="@string/ctacte"
+                    android:textColor="@color/ctacte"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/text_ctacte"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/text_caption_ctacte"
+                    android:text=""
+                    android:textColor="@color/ctacte"/>
+            </RelativeLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <!--<android.support.v4.widget.CircleImageView-->
+    <!--android:layout_width="48dp"-->
+    <!--android:layout_height="48dp"-->
+    <!--android:layout_toEndOf="@+id/Lay"-->
+    <!--android:background="@color/colorAccent"/>-->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="15">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/img_estado"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            app:civ_border_color="#FF000000"
+            app:civ_border_width="2dp"/>
+    </LinearLayout>
+    <!--app:border_width="2dp"-->
+    <!--app:border_color="@color/white"-->
+    <!--android:layout_alignParentTop="true"-->
+    <!--android:layout_alignParentLeft="true" />-->
+</LinearLayout>

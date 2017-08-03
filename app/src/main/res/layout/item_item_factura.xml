@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:weightSum="100">
+
+    <LinearLayout
+        android:id="@+id/layCodigoDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="60"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvCodigoArticulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0000000009376"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            tools:ignore="HardcodedText"/>
+
+        <TextView
+            android:id="@+id/tvDescripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CERV PALERMO RETORN 12x970 CC"
+            android:textAppearance="@style/TextAppearance.AppCompat"
+            tools:ignore="HardcodedText"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvCantidad"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="15"
+        android:text="103.000"
+        android:textAlignment="viewEnd"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        tools:ignore="HardcodedText"/>
+
+    <TextView
+        android:id="@+id/tvImporteFinal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="25"
+        android:text="$ 20766.8960"
+        android:textAlignment="viewEnd"
+        android:textAppearance="@style/TextAppearance.AppCompat"
+        tools:ignore="HardcodedText"/>
+</LinearLayout>

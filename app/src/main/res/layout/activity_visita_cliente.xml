@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:weightSum="6"
+    tools:context="com.dynamicsoftware.pocho.logistica.VisitaCliente">
+
+    <Button
+        android:id="@+id/btn_entrega_total"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawablePadding="-48dp"
+        android:drawableStart="@drawable/ic_entrega_total"
+        android:text="@string/entrega_total"/>
+
+    <Button
+        android:id="@+id/btn_entrega_parcial"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawablePadding="-48dp"
+        android:drawableStart="@drawable/ic_entrega_parcial"
+        android:text="@string/entrega_parcial"/>
+
+    <Button
+        android:id="@+id/btn_rechazado"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawablePadding="-48dp"
+        android:drawableStart="@drawable/ic_rechazado"
+        android:text="@string/rechazado"/>
+
+    <Button
+        android:id="@+id/btn_cerrado"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawablePadding="-48dp"
+        android:drawableStart="@drawable/ic_cerrado"
+        android:text="@string/cerrado"/>
+
+    <Button
+        android:id="@+id/btn_sin_visitar"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawablePadding="-48dp"
+        android:drawableStart="@drawable/ic_sin_visitar"
+        android:text="@string/sin_visitar"/>
+
+    <Button
+        android:id="@+id/btn_volver_luego"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:drawablePadding="-48dp"
+        android:drawableStart="@drawable/ic_volver"
+        android:text="@string/volver_luego"/>
+</LinearLayout>
