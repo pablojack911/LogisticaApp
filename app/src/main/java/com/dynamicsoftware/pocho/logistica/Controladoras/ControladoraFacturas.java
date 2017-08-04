@@ -215,15 +215,47 @@ public class ControladoraFacturas extends Controladora
 
     public double totalEfectivoEntregaParcialParaRendir(String usuario)
     {
+        double finalFacturas;
+        double finalRechazado;
+        finalFacturas = totalEntregaParcial(usuario);
+        finalRechazado = totalRechazadoEntregaParcial(usuario);
+        return finalFacturas + finalRechazado;
+    }
+
+    private double totalEntregaParcial(String usuario)
+    {
         double total = 0;
         SQLiteDatabase db = helper.getReadableDatabase();
-        String query = "select sum(f." + FacturaContract.Factura._TOTAL + ") + (select sum(itf." + ItemFacturaContract.ItemFactura._IMPORTE_FINAL + ")"
-                + " from " + ItemFacturaContract.ItemFactura.TABLE_NAME + " itf"
-                + " where itf." + ItemFacturaContract.ItemFactura._FACTURA_ID + "= f." + FacturaContract.Factura._ID
-                + " and itf." + ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO + ">?)"
+        String query = "select sum(f." + FacturaContract.Factura._TOTAL + ")"
                 + " from " + FacturaContract.Factura.TABLE_NAME + " f"
                 + " inner join " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME + " ruta on ruta." + RutaDeEntregaContract.RutaDeEntrega._CLIENTE + "= f." + FacturaContract.Factura._CLIENTE
                 + " where f." + FacturaContract.Factura._CONDICION_VENTA + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?";
+        String[] args = {String.valueOf(CONDICION_VENTA.EFECTIVO.ordinal()), String.valueOf(ESTADO_ENTREGA.ENTREGA_PARCIAL.ordinal()), usuario};
+        Cursor cursor = db.rawQuery(query, args);
+        if (cursor.moveToNext())
+        {
+            total = cursor.getDouble(0);
+            cursor.close();
+        }
+        return total;
+    }
+
+    private double totalRechazadoEntregaParcial(String usuario)
+    {
+        double total = 0;
+        SQLiteDatabase db = helper.getReadableDatabase();
+        /*
+            select sum(importeFinal)
+            from itemFactura
+            inner join facturas on itemFactura.factura_id=facturas._id
+            inner join rutaDeEntrega on rutaDeEntrega.cliente = facturas.cliente
+            where itemFactura.idRowRef>0 and facturas.condicionVenta=0 and rutaDeEntrega.estado=2 and rutaDeEntrega.fletero='F0030'
+        */
+        String query = "select sum(itf." + ItemFacturaContract.ItemFactura._IMPORTE_FINAL + ")"
+                + " from " + ItemFacturaContract.ItemFactura.TABLE_NAME + " itf"
+                + " inner join " + FacturaContract.Factura.TABLE_NAME + " f on f." + FacturaContract.Factura._ID + " = itf." + ItemFacturaContract.ItemFactura._FACTURA_ID
+                + " inner join " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME + " ruta on ruta." + RutaDeEntregaContract.RutaDeEntrega._CLIENTE + "= f." + FacturaContract.Factura._CLIENTE
+                + " where itf." + ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO + ">? and f." + FacturaContract.Factura._CONDICION_VENTA + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?";
         String[] args = {String.valueOf(0), String.valueOf(CONDICION_VENTA.EFECTIVO.ordinal()), String.valueOf(ESTADO_ENTREGA.ENTREGA_PARCIAL.ordinal()), usuario};
         Cursor cursor = db.rawQuery(query, args);
         if (cursor.moveToNext())
