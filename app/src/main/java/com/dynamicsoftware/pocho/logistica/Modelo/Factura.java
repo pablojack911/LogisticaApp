@@ -48,6 +48,7 @@ public class Factura extends BaseModel
 
     protected Factura(Parcel in)
     {
+        super(in);
         cliente = in.readString();
         empresa = in.readString();
         reparto = in.readString();
@@ -235,6 +236,7 @@ public class Factura extends BaseModel
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        super.writeToParcel(dest,flags);
         dest.writeString(cliente);
         dest.writeString(empresa);
         dest.writeString(reparto);

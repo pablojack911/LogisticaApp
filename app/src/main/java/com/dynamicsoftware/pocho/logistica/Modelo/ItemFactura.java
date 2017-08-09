@@ -57,6 +57,7 @@ public class ItemFactura extends BaseModel implements Comparable
 
     public ItemFactura(Parcel in)
     {
+        super(in);
         articulo = in.readString();
         codigoBarraBulto = in.readString();
         codigoBarraUnidad = in.readString();
@@ -276,6 +277,7 @@ public class ItemFactura extends BaseModel implements Comparable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        super.writeToParcel(dest,flags);
         dest.writeString(articulo);
         dest.writeString(codigoBarraBulto);
         dest.writeString(codigoBarraUnidad);

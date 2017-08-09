@@ -31,6 +31,7 @@ public class MotivoRechazoFactura extends BaseModel
 
     private MotivoRechazoFactura(Parcel in)
     {
+        super(in);
         codigo = in.readString();
         descripcion = in.readString();
     }
@@ -64,6 +65,7 @@ public class MotivoRechazoFactura extends BaseModel
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        super.writeToParcel(dest,flags);
         dest.writeString(codigo);
         dest.writeString(descripcion);
     }
