@@ -34,5 +34,6 @@ dependencies {
     compile 'org.apache.directory.studio:org.apache.commons.io:2.4'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.github.travijuu:numberpicker:1.0.7'
+    compile 'com.amitshekhar.android:debug-db:1.0.1'
     testCompile 'junit:junit:4.12'
 }
