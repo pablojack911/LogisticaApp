@@ -66,6 +66,6 @@ public class Utiles
     public static boolean GPSActivado(Context context)
     {
         LocationManager manager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
-        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER) || manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 }
