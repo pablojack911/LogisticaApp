@@ -224,10 +224,12 @@ public class FinalizaEntregaParcial extends AppCompatActivity
                         }
                     }
                     else
+                        //TODO: REVISAR SI EL CODIGO MOTIVO RECHAZO DE LA FACTURA ENTRA
                     {
                         if (!factura.getCodigoRechazo().equals(""))
                         {
                             facturaArrayList.add(factura);
+                            long res = controladoraFacturas.actualizar(factura);
                         }
                     }
                 }

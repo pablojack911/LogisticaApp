@@ -48,7 +48,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             db.execSQL(CreateTables.Usuarios);
             db.execSQL(CreateIndexes.Usuarios_id);
             db.execSQL(CreateIndexes.Usuarios_usuario);
-            db.execSQL(MockData.Usuarios);
+//            db.execSQL(MockData.Usuarios);
             //Ruta de entrega
             db.execSQL(CreateTables.RutaDeEntrega);
             db.execSQL(CreateIndexes.RutaDeEntrega_id);
@@ -56,7 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             db.execSQL(CreateIndexes.RutaDeEntrega_enviado);
             db.execSQL(CreateIndexes.RutaDeEntrega_finalizado);
             db.execSQL(CreateIndexes.RutaDeEntrega_fletero);
-            db.execSQL(MockData.RutaDeEntrega);
+//            db.execSQL(MockData.RutaDeEntrega);
             //PosGPS
             db.execSQL(CreateTables.PosGPS);
             db.execSQL(CreateIndexes.PosGPS_id);
@@ -71,7 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             db.execSQL(CreateIndexes.Facturas_numero);
             db.execSQL(CreateIndexes.Facturas_empresa);
             db.execSQL(CreateIndexes.Facturas_subempresa);
-            db.execSQL(MockData.Facturas);
+//            db.execSQL(MockData.Facturas);
             //MotivoRechazoFactura
             db.execSQL(CreateTables.MotivoRechazoFactura);
             db.execSQL(CreateIndexes.MotivoRechazoFactura_id);
