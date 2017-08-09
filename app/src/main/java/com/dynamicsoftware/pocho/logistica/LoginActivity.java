@@ -377,7 +377,7 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onDestroy()
     {
-        mControladoraUsuarios.cerrar();
+//        mControladoraUsuarios.cerrar();
         super.onDestroy();
     }
 
