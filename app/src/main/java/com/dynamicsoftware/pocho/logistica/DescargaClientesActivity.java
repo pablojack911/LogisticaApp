@@ -127,6 +127,7 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
 //            }
             AlertDialog.Builder builder = new AlertDialog.Builder(DescargaClientesActivity.this);
             builder.setMessage(res);
+            builder.setCancelable(false);
             builder.setPositiveButton("Aceptar", new DialogInterface.OnClickListener()
             {
                 @Override
@@ -649,15 +650,15 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
          */
         class Result
         {
-            public String mResultValue;
-            public Exception mException;
+            String mResultValue;
+            Exception mException;
 
-            public Result(String resultValue)
+            Result(String resultValue)
             {
                 mResultValue = resultValue;
             }
 
-            public Result(Exception exception)
+            Result(Exception exception)
             {
                 mException = exception;
             }
