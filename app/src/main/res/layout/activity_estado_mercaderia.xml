@@ -40,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="$ 5445.53"
+            android:text="Calculando..."
             android:textAlignment="viewEnd"
             android:textAppearance="@android:style/TextAppearance.Material"
             android:textSize="24sp"
