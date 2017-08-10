@@ -1,5 +1,6 @@
 package com.dynamicsoftware.pocho.logistica.Vista.EntregaParcial;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -181,94 +182,119 @@ public class FinalizaEntregaParcial extends AppCompatActivity
         switch (item.getItemId())
         {
             case R.id.menu_finalizar_entrega_parcial:
-                finalizarEntregaPendiente();
-                Intent intent = new Intent();
-                setResult(RESULT_OK, intent);
-                finish();
+                new EntregaPendienteAsyncTask().execute();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void finalizarEntregaPendiente()
+    private class EntregaPendienteAsyncTask extends AsyncTask<Void, String, Void>
     {
-        new AsyncTask<Void, Void, Void>()
-        {
-            @Override
-            protected Void doInBackground(Void... params)
-            {
-                RutaDeEntrega rutaDeEntrega = new RutaDeEntrega();
-                rutaDeEntrega.setCliente(cliente);
-                rutaDeEntrega.setEstadoEntrega(ESTADO_ENTREGA.ENTREGA_PARCIAL);
-                ArrayList<Factura> facturaArrayList = new ArrayList<>();
-                //actualmente (2017/07/26) al servicio se le envian los items rechazados en el caso de entrega parcial
-                for (Factura factura : mFacturas)
-                {
-                    ArrayList<ItemFactura> itemFacturaArrayList = new ArrayList<>();
-                    for (ItemFactura itemFactura : factura.getItems())
-                    {
-                        if (itemFactura.getIdRowRefRechazo() > 0)
-                        {
-                            itemFacturaArrayList.add(itemFactura);
-                        }
-                    }
-                    if (itemFacturaArrayList.size() > 0)
-                    {
-                        factura.getItems().clear();
-                        factura.getItems().addAll(itemFacturaArrayList);
-                        facturaArrayList.add(factura);
-                        //grabo en la db los items rechazados, para luego contar qué se entregó y que volvió a la empresa
-                        for (ItemFactura itemFactura : itemFacturaArrayList)
-                        {
-                            controladoraItemFactura.insertar(itemFactura);
-                        }
-                    }
-                    else
-                        //TODO: REVISAR SI EL CODIGO MOTIVO RECHAZO DE LA FACTURA ENTRA
-                    {
-                        if (!factura.getCodigoRechazo().equals(""))
-                        {
-                            facturaArrayList.add(factura);
-                            long res = controladoraFacturas.actualizar(factura);
-                        }
-                    }
-                }
-                rutaDeEntrega.setFacturas(facturaArrayList);
-                Gson gson = new Gson();
-                String json = gson.toJson(rutaDeEntrega, RutaDeEntrega.class);
-                HttpURLConnection conn;
-                try
-                {
-                    URL url = new URL(CONSTANTES.URL_FINALIZA_ENTREGA);
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(60 * 1000);
-                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setRequestMethod("POST");
-                    OutputStream os = conn.getOutputStream();
-                    os.write(json.getBytes("UTF-8"));
-                    os.close();
-                    // read the response
-                    int res = conn.getResponseCode();
-                    if (res == 200) //OK
-                    {
-                        Log.d(TAG, "Finalizado en el servidor -> " + res);
-                    }
-                    else
-                    {
-                        String response = conn.getResponseMessage();
-                        Log.d(TAG, response);
-                    }
-                    conn.disconnect();
-                }
-                catch (Exception ex)
-                {
-                    Log.e(TAG, ex.getLocalizedMessage());
-                }
-                return null;
-            }
-        }.execute();
+        ProgressDialog progressDialog;
 
+        public EntregaPendienteAsyncTask()
+        {
+            progressDialog = new ProgressDialog(FinalizaEntregaParcial.this);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setCancelable(false);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values)
+        {
+            String mensaje = values[0];
+            progressDialog.setMessage(mensaje);
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid)
+        {
+            progressDialog.dismiss();
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params)
+        {
+            RutaDeEntrega rutaDeEntrega = new RutaDeEntrega();
+            rutaDeEntrega.setCliente(cliente);
+            rutaDeEntrega.setEstadoEntrega(ESTADO_ENTREGA.ENTREGA_PARCIAL);
+            ArrayList<Factura> facturaArrayList = new ArrayList<>();
+            //actualmente (2017/07/26) al servicio se le envian los items rechazados en el caso de entrega parcial
+            publishProgress("Procesando facturas...");
+            for (Factura factura : mFacturas)
+            {
+                ArrayList<ItemFactura> itemFacturaArrayList = new ArrayList<>();
+                for (ItemFactura itemFactura : factura.getItems())
+                {
+                    if (itemFactura.getIdRowRefRechazo() > 0)
+                    {
+                        itemFacturaArrayList.add(itemFactura);
+                    }
+                }
+                if (itemFacturaArrayList.size() > 0)
+                {
+                    factura.getItems().clear();
+                    factura.getItems().addAll(itemFacturaArrayList);
+                    facturaArrayList.add(factura);
+                    //grabo en la db los items rechazados, para luego contar qué se entregó y que volvió a la empresa
+                    for (ItemFactura itemFactura : itemFacturaArrayList)
+                    {
+                        controladoraItemFactura.insertar(itemFactura);
+                    }
+                }
+                else
+                //TODO: REVISAR SI EL CODIGO MOTIVO RECHAZO DE LA FACTURA ENTRA
+                {
+                    if (!factura.getCodigoRechazo().equals(""))
+                    {
+                        facturaArrayList.add(factura);
+                        long res = controladoraFacturas.actualizar(factura);
+                    }
+                }
+            }
+            publishProgress("Enviando...");
+            rutaDeEntrega.setFacturas(facturaArrayList);
+            Gson gson = new Gson();
+            String json = gson.toJson(rutaDeEntrega, RutaDeEntrega.class);
+            HttpURLConnection conn;
+            try
+            {
+                URL url = new URL(CONSTANTES.URL_FINALIZA_ENTREGA);
+                conn = (HttpURLConnection) url.openConnection();
+                conn.setConnectTimeout(60 * 1000);
+                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream os = conn.getOutputStream();
+                os.write(json.getBytes("UTF-8"));
+                os.close();
+                // read the response
+                int res = conn.getResponseCode();
+                if (res == 200) //OK
+                {
+                    publishProgress("Listo.");
+                    Log.d(TAG, "Finalizado en el servidor -> " + res);
+                }
+                else
+                {
+                    String response = conn.getResponseMessage();
+                    publishProgress(response);
+                    Log.d(TAG, response);
+                }
+                conn.disconnect();
+            }
+            catch (Exception ex)
+            {
+                publishProgress(ex.getLocalizedMessage());
+                Log.e(TAG, ex.getLocalizedMessage());
+            }
+            return null;
+        }
     }
 }
