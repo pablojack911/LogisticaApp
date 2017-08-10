@@ -229,8 +229,8 @@ public class ControladoraFacturas extends Controladora
         String query = "select sum(f." + FacturaContract.Factura._TOTAL + ")"
                 + " from " + FacturaContract.Factura.TABLE_NAME + " f"
                 + " inner join " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME + " ruta on ruta." + RutaDeEntregaContract.RutaDeEntrega._CLIENTE + "= f." + FacturaContract.Factura._CLIENTE
-                + " where f." + FacturaContract.Factura._CONDICION_VENTA + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?";
-        String[] args = {String.valueOf(CONDICION_VENTA.EFECTIVO.ordinal()), String.valueOf(ESTADO_ENTREGA.ENTREGA_PARCIAL.ordinal()), usuario};
+                + " where f." + FacturaContract.Factura._CONDICION_VENTA + "=? and f." + FacturaContract.Factura._CODIGO_RECHAZO + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "=? and ruta." + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?";
+        String[] args = {String.valueOf(CONDICION_VENTA.EFECTIVO.ordinal()), "", String.valueOf(ESTADO_ENTREGA.ENTREGA_PARCIAL.ordinal()), usuario};
         Cursor cursor = db.rawQuery(query, args);
         if (cursor.moveToNext())
         {
