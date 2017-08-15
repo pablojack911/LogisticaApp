@@ -23,7 +23,7 @@
             android:name="com.google.android.gps.version"
             android:value="@integer/google_play_services_version"/>
 
-        <activity android:name=".MainActivity"/>
+        <activity android:name=".RutaDeEntregaActivity"/>
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -53,6 +53,11 @@
         <activity android:name=".Vista.VPRutaDeEntrega.VisitaMultipleClientes">
         </activity>
         <activity android:name=".Vista.EstadoMercaderia.EstadoMercaderiaActivity">
+        </activity>
+        <activity
+            android:name=".MainActivityDrawer"
+            android:label="@string/title_activity_main_drawer"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 

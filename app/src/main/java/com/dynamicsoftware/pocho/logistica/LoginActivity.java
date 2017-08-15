@@ -1,6 +1,5 @@
 package com.dynamicsoftware.pocho.logistica;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
@@ -395,7 +394,7 @@ public class LoginActivity extends AppCompatActivity
 
     private void goToMain()
     {
-        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        Intent intent = new Intent(LoginActivity.this, RutaDeEntregaActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
