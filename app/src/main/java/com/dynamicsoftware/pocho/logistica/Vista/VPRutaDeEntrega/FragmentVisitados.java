@@ -141,29 +141,29 @@ public class FragmentVisitados extends Fragment
                     }
                 };
                 lv.setAdapter(adapter);
-//                lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
-//                {
-//                    @Override
-//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-//                    {
-//                        if (Utiles.GPSActivado(getActivity()))
-//                        {
-//                            RutaDeEntrega rutaDeEntrega = (RutaDeEntrega) parent.getItemAtPosition(position);
-//                            if (rutaDeEntrega.getFinalizado() == 0 && rutaDeEntrega.getEstadoEntrega() != ESTADO_ENTREGA.ENTREGA_PARCIAL)
-//                            {
-//                                Intent intent = new Intent(getContext(), VisitaCliente.class);
-//                                intent.putExtra(RUTA_DE_ENTREGA, rutaDeEntrega);
-//                                intent.putExtra(CAMBIA_ESTADO_ENTREGA, true);
-//                                startActivity(intent);
-//                            }
-//                        }
-//                        else
-//                        {
-//                            controladoraPosGPS.creaIntentGrabar(getActivity(), "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
-//                            Utiles.displayPromptForEnablingGPS(getActivity());
-//                        }
-//                    }
-//                });
+                lv.setOnItemClickListener(new AdapterView.OnItemClickListener()
+                {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+                    {
+                        if (Utiles.GPSActivado(getActivity()))
+                        {
+                            RutaDeEntrega rutaDeEntrega = (RutaDeEntrega) parent.getItemAtPosition(position);
+                            if (rutaDeEntrega.getFinalizado() == 0 && rutaDeEntrega.getEstadoEntrega() != ESTADO_ENTREGA.ENTREGA_PARCIAL)
+                            {
+                                Intent intent = new Intent(getContext(), VisitaCliente.class);
+                                intent.putExtra(RUTA_DE_ENTREGA, rutaDeEntrega);
+                                intent.putExtra(CAMBIA_ESTADO_ENTREGA, true);
+                                startActivity(intent);
+                            }
+                        }
+                        else
+                        {
+                            controladoraPosGPS.creaIntentGrabar(getActivity(), "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
+                            Utiles.displayPromptForEnablingGPS(getActivity());
+                        }
+                    }
+                });
             }
             else
             {

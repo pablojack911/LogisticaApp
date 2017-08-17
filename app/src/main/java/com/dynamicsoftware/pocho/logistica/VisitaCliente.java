@@ -186,6 +186,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
             //no necesita llamar a preparaEntrega para grabar en detDescarga
+            preparaEntrega("", ESTADO_ENTREGA.ENTREGA_TOTAL);
             ActualizaEstado(ESTADO_ENTREGA.ENTREGA_TOTAL);
         }
         else
