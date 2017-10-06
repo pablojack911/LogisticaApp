@@ -145,7 +145,7 @@ public class FacturasExpandableListAdapter extends BaseExpandableListAdapter
         TextView tvImporteFinal = (TextView) convertView.findViewById(R.id.tvImporteFinal);
         tvArticulo.setText(itemFactura.getArticulo());
         tvDescripcion.setText(itemFactura.getDescripcion());
-        int cantidad = itemFactura.getCantidad();
+        double cantidad = itemFactura.getCantidad();
         tvCantidad.setText(String.valueOf(cantidad));
         if (cantidad < 0)
         {

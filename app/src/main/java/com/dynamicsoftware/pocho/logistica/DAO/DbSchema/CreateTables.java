@@ -74,7 +74,9 @@ public class CreateTables
             ItemFacturaContract.ItemFactura._MOTIVO_RECHAZO + " text," +
             ItemFacturaContract.ItemFactura._FACTURA_ID + " int," +
             ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO + " int," +
-            ItemFacturaContract.ItemFactura._CANTIDAD + " int, " +
+            ItemFacturaContract.ItemFactura._UNIDADES_POR_BULTO + " int," +
+            ItemFacturaContract.ItemFactura._MINIMO_VENTA + " int," +
+            ItemFacturaContract.ItemFactura._CANTIDAD + " double, " +
             ItemFacturaContract.ItemFactura._DESCUENTO_1 + " float," +
             ItemFacturaContract.ItemFactura._DESCUENTO_2 + " float," +
             ItemFacturaContract.ItemFactura._DESCUENTO_3 + " float," +

@@ -1,27 +1,30 @@
 package com.dynamicsoftware.pocho.logistica;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ListView;
 
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraFacturas;
+import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraItemFactura;
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraMotivoRechazoFactura;
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraPosGPS;
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraRutaDeEntrega;
 import com.dynamicsoftware.pocho.logistica.Controladoras.SaveSharedPreferences;
 import com.dynamicsoftware.pocho.logistica.Controladoras.Utiles;
 import com.dynamicsoftware.pocho.logistica.Modelo.ESTADO_ENTREGA;
+import com.dynamicsoftware.pocho.logistica.Modelo.Factura;
+import com.dynamicsoftware.pocho.logistica.Modelo.ItemFactura;
 import com.dynamicsoftware.pocho.logistica.Modelo.MotivoRechazoFactura;
 import com.dynamicsoftware.pocho.logistica.Modelo.RutaDeEntrega;
 import com.dynamicsoftware.pocho.logistica.Vista.EntregaParcial.ActivityListadoFactura;
-import com.dynamicsoftware.pocho.logistica.Vista.EntregaParcial.MotivoRechazoFacturaSingleChoiceItemAdapter;
+import com.dynamicsoftware.pocho.logistica.Vista.PedidoRechazado.PedidoRechazado;
 import com.google.gson.Gson;
 
 import java.io.OutputStream;
@@ -33,7 +36,7 @@ import static com.dynamicsoftware.pocho.logistica.CONSTANTES.CAMBIA_ESTADO_ENTRE
 import static com.dynamicsoftware.pocho.logistica.CONSTANTES.ID_RUTA_DE_ENTREGA;
 import static com.dynamicsoftware.pocho.logistica.CONSTANTES.RUTA_DE_ENTREGA;
 
-public class VisitaCliente extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnDismissListener
+public class VisitaCliente extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnDismissListener, AsyncResponse
 {
     private static final String TAG = "VisitaCliente";
     RutaDeEntrega mRutaDeEntrega;
@@ -43,7 +46,9 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     ControladoraPosGPS controladoraPosGPS;
     ControladoraMotivoRechazoFactura controladoraMotivoRechazoFactura;
     ControladoraFacturas controladoraFacturas;
+    ControladoraItemFactura controladoraItemFactura;
     boolean cambiaEstado;
+    ESTADO_ENTREGA estadoSeleccionado;
     String usuario;
 
     Button btnEntregaTotal;
@@ -84,6 +89,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         controladoraPosGPS = new ControladoraPosGPS(VisitaCliente.this);
         controladoraMotivoRechazoFactura = new ControladoraMotivoRechazoFactura(VisitaCliente.this);
         controladoraFacturas = new ControladoraFacturas(VisitaCliente.this);
+        controladoraItemFactura = new ControladoraItemFactura(VisitaCliente.this);
 
         motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos(null, null);
 
@@ -144,7 +150,8 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
                 ConfiguraSinVisitar();
                 break;
             case R.id.btn_volver_luego:
-                ActualizaEstado(ESTADO_ENTREGA.VOLVER_LUEGO);
+                estadoSeleccionado = ESTADO_ENTREGA.VOLVER_LUEGO;
+                ActualizaEstado(estadoSeleccionado);
                 break;
             default:
                 break;
@@ -156,8 +163,9 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
             String sinVisitar = "006";// 006 - No se pudo llegar con el reparto
-            preparaEntrega(sinVisitar, ESTADO_ENTREGA.SIN_VISITAR);
-            ActualizaEstado(ESTADO_ENTREGA.SIN_VISITAR);
+            estadoSeleccionado = ESTADO_ENTREGA.SIN_VISITAR;
+            preparaEntrega(sinVisitar, estadoSeleccionado);
+//            ActualizaEstado(ESTADO_ENTREGA.SIN_VISITAR);
         }
         else
         {
@@ -171,8 +179,9 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
             String cerrado = "011"; // 011 - Cerrado
-            preparaEntrega(cerrado, ESTADO_ENTREGA.LOCAL_CERRADO);
-            ActualizaEstado(ESTADO_ENTREGA.LOCAL_CERRADO);
+            estadoSeleccionado = ESTADO_ENTREGA.LOCAL_CERRADO;
+            preparaEntrega(cerrado, estadoSeleccionado);
+//            ActualizaEstado(ESTADO_ENTREGA.LOCAL_CERRADO);
         }
         else
         {
@@ -186,8 +195,9 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
             //no necesita llamar a preparaEntrega para grabar en detDescarga
-            preparaEntrega("", ESTADO_ENTREGA.ENTREGA_TOTAL);
-            ActualizaEstado(ESTADO_ENTREGA.ENTREGA_TOTAL);
+            estadoSeleccionado = ESTADO_ENTREGA.ENTREGA_TOTAL;
+            preparaEntrega("", estadoSeleccionado);
+//            ActualizaEstado(ESTADO_ENTREGA.ENTREGA_TOTAL);
         }
         else
         {
@@ -219,44 +229,46 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     {
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
-            AlertDialog.Builder builder = new AlertDialog.Builder(VisitaCliente.this, android.R.style.Theme_DeviceDefault_Light_NoActionBar);
-            builder.setTitle(R.string.rechazar_todo);
-            MotivoRechazoFacturaSingleChoiceItemAdapter motivosAdapter = new MotivoRechazoFacturaSingleChoiceItemAdapter(motivoRechazoFacturas, VisitaCliente.this);
-            int seleccionado = -1;
-            builder.setSingleChoiceItems(motivosAdapter, seleccionado, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-
-                }
-            });
-            builder.setPositiveButton(R.string.rechazar, new DialogInterface.OnClickListener()
-            {
-                public void onClick(DialogInterface dialog, int id)
-                {
-                    ListView lw = ((AlertDialog) dialog).getListView();
-                    MotivoRechazoFactura motivoSeleccionado = (MotivoRechazoFactura) lw.getAdapter().getItem(lw.getCheckedItemPosition());
-                    if (motivoSeleccionado != null)
-                    {
-                        preparaEntrega(motivoSeleccionado.getCodigo(), ESTADO_ENTREGA.RECHAZADO);
-                        controladoraRutaDeEntrega.actualizaEstado(ESTADO_ENTREGA.RECHAZADO, mRutaDeEntrega.getId());
-                        //CHECK OUT
-                        controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, mRutaDeEntrega.getCliente(), usuario, ESTADO_ENTREGA.RECHAZADO);
-                        finalizar();
-                    }
-                }
-            });
-            builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                }
-            });
-            builder.setOnDismissListener(VisitaCliente.this);
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+//            AlertDialog.Builder builder = new AlertDialog.Builder(VisitaCliente.this, android.R.style.Theme_DeviceDefault_Light_NoActionBar);
+//            builder.setTitle(R.string.rechazar_todo);
+//            MotivoRechazoFacturaSingleChoiceItemAdapter motivosAdapter = new MotivoRechazoFacturaSingleChoiceItemAdapter(motivoRechazoFacturas, VisitaCliente.this);
+//            int seleccionado = -1;
+//            builder.setSingleChoiceItems(motivosAdapter, seleccionado, new DialogInterface.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which)
+//                {
+//
+//                }
+//            });
+//            builder.setPositiveButton(R.string.rechazar, new DialogInterface.OnClickListener()
+//            {
+//                public void onClick(DialogInterface dialog, int id)
+//                {
+//                    ListView lw = ((AlertDialog) dialog).getListView();
+//                    MotivoRechazoFactura motivoSeleccionado = (MotivoRechazoFactura) lw.getAdapter().getItem(lw.getCheckedItemPosition());
+//                    if (motivoSeleccionado != null)
+//                    {
+//                        estadoSeleccionado = ESTADO_ENTREGA.RECHAZADO;
+//                        preparaEntrega(motivoSeleccionado.getCodigo(), estadoSeleccionado);
+////                        ActualizaEstado(ESTADO_ENTREGA.RECHAZADO);
+//                    }
+//                }
+//            });
+//            builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener()
+//            {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which)
+//                {
+//                }
+//            });
+//            builder.setOnDismissListener(VisitaCliente.this);
+//            AlertDialog alertDialog = builder.create();
+//            alertDialog.show();
+            Intent intent = new Intent(VisitaCliente.this, PedidoRechazado.class);
+            intent.putExtra(CONSTANTES.CLIENTE, mRutaDeEntrega.getCliente());
+            intent.putExtra(CONSTANTES.NOMBRE_CLIENTE, mRutaDeEntrega.getNombre());
+            startActivityForResult(intent, CONSTANTES.PEDIDO_RECHAZADO_INTENT);
         }
         else
         {
@@ -268,53 +280,20 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     void preparaEntrega(String codigoMotivoSeleccionado, ESTADO_ENTREGA estado)
     {
         controladoraFacturas.actualizarFacturas(mRutaDeEntrega.getCliente(), codigoMotivoSeleccionado);
-        mRutaDeEntrega.setFacturas(controladoraFacturas.obtenerFacturas(mRutaDeEntrega.getCliente()));
+        ArrayList<Factura> mFacturas = controladoraFacturas.obtenerFacturas(mRutaDeEntrega.getCliente());
+        for (Factura factura : mFacturas)
+        {
+            ArrayList<ItemFactura> itemFacturaArrayList = controladoraItemFactura.obtenerItemsFactura(factura.getId());
+            factura.setItems(itemFacturaArrayList);
+        }
+        mRutaDeEntrega.setFacturas(mFacturas);
         mRutaDeEntrega.setEstadoEntrega(estado);
         enviarRechazo();
     }
 
     private void enviarRechazo()
     {
-        new AsyncTask<Void, Void, Void>()
-        {
-            @Override
-            protected Void doInBackground(Void... params)
-            {
-                Gson gson = new Gson();
-                String json = gson.toJson(mRutaDeEntrega, RutaDeEntrega.class);
-                HttpURLConnection conn;
-                try
-                {
-                    URL url = new URL(CONSTANTES.URL_FINALIZA_ENTREGA);
-                    conn = (HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(60 * 1000);
-                    conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setRequestMethod("POST");
-                    OutputStream os = conn.getOutputStream();
-                    os.write(json.getBytes("UTF-8"));
-                    os.close();
-                    // read the response
-                    int res = conn.getResponseCode();
-                    if (res == 200) //OK
-                    {
-                        Log.d(TAG, "Finalizado en el servidor -> " + res);
-                    }
-                    else
-                    {
-                        String response = conn.getResponseMessage();
-                        Log.d(TAG, response);
-                    }
-                    conn.disconnect();
-                }
-                catch (Exception ex)
-                {
-                    Log.e(TAG, ex.getLocalizedMessage());
-                }
-                return null;
-            }
-        }.execute();
+        new EnviarRechazoAsyncTask(VisitaCliente.this, mRutaDeEntrega, this).execute();
     }
 
     @Override
@@ -324,7 +303,20 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         {
             if (resultCode == RESULT_OK)
             {
-                ActualizaEstado(ESTADO_ENTREGA.ENTREGA_PARCIAL);
+                estadoSeleccionado = ESTADO_ENTREGA.ENTREGA_PARCIAL;
+                ActualizaEstado(estadoSeleccionado);
+            }
+        }
+        else
+        {
+            if (requestCode == CONSTANTES.PEDIDO_RECHAZADO_INTENT)
+            {
+                if (resultCode == RESULT_OK)
+                {
+                    String motivo = data.getStringExtra(CONSTANTES.MOTIVO_RECHAZADO_SELECCIONADO);
+                    estadoSeleccionado = ESTADO_ENTREGA.RECHAZADO;
+                    preparaEntrega(motivo, estadoSeleccionado);
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -343,5 +335,125 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         intent.putExtra(RUTA_DE_ENTREGA, mRutaDeEntrega);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    public void processFinish(Boolean output)
+    {
+        if (!output)
+        {
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(VisitaCliente.this);
+            builder.setCancelable(false);
+            builder.setMessage("No se logró grabar los cambios en el servidor.");
+            builder.setPositiveButton("reintentar", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    enviarRechazo();
+                }
+            });
+            builder.setNegativeButton("omitir", new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    ActualizaEstado(estadoSeleccionado);
+                }
+            });
+            builder.create().show();
+        }
+        else
+        {
+            ActualizaEstado(estadoSeleccionado);
+        }
+    }
+
+
+    private class EnviarRechazoAsyncTask extends AsyncTask<Void, String, Boolean>
+    {
+        AsyncResponse delegate = null;
+        RutaDeEntrega mRutaDeEntrega;
+        Context context;
+        ProgressDialog progressDialog;
+
+        public EnviarRechazoAsyncTask(Context context, RutaDeEntrega rutaDeEntrega, AsyncResponse delegate)
+        {
+            this.delegate = delegate;
+            this.mRutaDeEntrega = rutaDeEntrega;
+            this.context = context;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result)
+        {
+            super.onPostExecute(result);
+            delegate.processFinish(result);
+            progressDialog.dismiss();
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values)
+        {
+            progressDialog.setMessage(values[0]);
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setCancelable(false);
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params)
+        {
+            Boolean res;
+            Gson gson = new Gson();
+            String json = gson.toJson(mRutaDeEntrega, RutaDeEntrega.class);
+            HttpURLConnection conn;
+            try
+            {
+                publishProgress("Procesando petición...");
+                URL url = new URL(CONSTANTES.URL_FINALIZA_ENTREGA);
+                conn = (HttpURLConnection) url.openConnection();
+                publishProgress("Conectando con el servidor...");
+                conn.setConnectTimeout(60 * 1000);
+                conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setRequestMethod("POST");
+                OutputStream os = conn.getOutputStream();
+                os.write(json.getBytes("UTF-8"));
+                os.close();
+                // read the response
+                int responseCode = conn.getResponseCode();
+                String response;
+                if (responseCode == 200) //OK
+                {
+                    res = true;
+                    response = "Grabando en el servidor -> OK.";
+                    Log.d(TAG, response);
+                    publishProgress(response);
+                }
+                else
+                {
+                    res = false;
+                    response = conn.getResponseMessage();
+                    Log.d(TAG, response);
+                    publishProgress(response);
+                }
+                conn.disconnect();
+            }
+            catch (Exception ex)
+            {
+                res = false;
+                Log.e(TAG, ex.getLocalizedMessage());
+                publishProgress(ex.getLocalizedMessage());
+            }
+            return res;
+        }
     }
 }

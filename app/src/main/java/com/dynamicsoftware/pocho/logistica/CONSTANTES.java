@@ -22,6 +22,7 @@ public class CONSTANTES
 //    public static final String URL_FINALIZA_ENTREGA = "http://mhergo.ddns.net:8888/hergomobile/api/fletero/finalizarEntrega/";
 //    public static final String URL_FINALIZA_DESCARGA = "http://mhergo.ddns.net:8888/hergomobile/api/fletero/RecibioOK/";
     //TEST
+    public static final String URL_LOGIN = "http://mhergo.ddns.net:8888/hergomobiletest/api/loginfletero/";
     public static final String URL_DESCARGA = "http://mhergo.ddns.net:8888/hergomobiletest/api/fletero/";
     public static final String URL_ENVIA_POS = "http://mhergo.ddns.net:8888/hergomobiletest/api/fletero/TrackingGPS";
     public static final String URL_FINALIZA_REPARTO = "http://mhergo.ddns.net:8888/hergomobiletest/api/fletero/finalizar/";
@@ -34,7 +35,11 @@ public class CONSTANTES
     public static final int ENTREGA_PARCIAL_INTENT = 1;
     public static final int FINALIZA_ENTREGA_PARCIAL_INTENT = 2;
     public static final int CLIENTES_VISITA_MULTIPLE_INTENT = 3;
+    public static final int PEDIDO_RECHAZADO_INTENT = 4;
     public static final String ID_RUTA_DE_ENTREGA = "ruta-entrega-id-key";
     public static final String CLIENTES_VISITA_MULTIPLE = "multi-clientes-visita";
+
     public static final String FACTURAS_PARCIALES = "facturas-parciales-key";
+    public static final String EMPRESA_MAYORISTA = "03";
+    public static final String MOTIVO_RECHAZADO_SELECCIONADO = "motivo-seleccionado-key";
 }

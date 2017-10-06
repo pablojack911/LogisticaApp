@@ -54,6 +54,8 @@
         </activity>
         <activity android:name=".Vista.EstadoMercaderia.EstadoMercaderiaActivity">
         </activity>
+        <activity android:name=".Vista.PedidoRechazado.PedidoRechazado">
+        </activity>
     </application>
 
 </manifest>

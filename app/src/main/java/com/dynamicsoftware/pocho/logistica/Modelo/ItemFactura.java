@@ -47,9 +47,11 @@ public class ItemFactura extends BaseModel implements Comparable
     private double descuento2;
     private double descuento3;
     private double descuento4;
-    private int cantidad;
+    private double cantidad;
     private double importeFinal;
     private int idRowRefRechazo;
+    private int unidadesPorBulto;
+    private int minimoVenta;
 
     public ItemFactura()
     {
@@ -70,11 +72,13 @@ public class ItemFactura extends BaseModel implements Comparable
         descuento2 = in.readDouble();
         descuento3 = in.readDouble();
         descuento4 = in.readDouble();
-        cantidad = in.readInt();
+        cantidad = in.readDouble();
         importeFinal = in.readDouble();
         factura = in.readInt();
         motivoRechazo = in.readString();
         idRowRefRechazo = in.readInt();
+        unidadesPorBulto = in.readInt();
+        minimoVenta= in.readInt();
     }
 
     public ItemFactura(ItemFactura itemFactura)
@@ -96,6 +100,8 @@ public class ItemFactura extends BaseModel implements Comparable
         factura = itemFactura.getFactura();
         motivoRechazo = itemFactura.getMotivoRechazo();
         idRowRefRechazo = itemFactura.getId();
+        unidadesPorBulto = itemFactura.getUnidadesPorBulto();
+        minimoVenta= itemFactura.getMinimoVenta();
     }
 
     public int getIdRowRefRechazo()
@@ -248,12 +254,12 @@ public class ItemFactura extends BaseModel implements Comparable
         this.descuento4 = descuento4;
     }
 
-    public int getCantidad()
+    public double getCantidad()
     {
         return cantidad;
     }
 
-    public void setCantidad(int cantidad)
+    public void setCantidad(double cantidad)
     {
         this.cantidad = cantidad;
     }
@@ -277,7 +283,7 @@ public class ItemFactura extends BaseModel implements Comparable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        super.writeToParcel(dest,flags);
+        super.writeToParcel(dest, flags);
         dest.writeString(articulo);
         dest.writeString(codigoBarraBulto);
         dest.writeString(codigoBarraUnidad);
@@ -290,16 +296,38 @@ public class ItemFactura extends BaseModel implements Comparable
         dest.writeDouble(descuento2);
         dest.writeDouble(descuento3);
         dest.writeDouble(descuento4);
-        dest.writeInt(cantidad);
+        dest.writeDouble(cantidad);
         dest.writeDouble(importeFinal);
         dest.writeInt(factura);
         dest.writeString(motivoRechazo);
         dest.writeInt(idRowRefRechazo);
+        dest.writeInt(unidadesPorBulto);
+        dest.writeInt(minimoVenta);
     }
 
     @Override
     public int compareTo(@NonNull Object o)
     {
         return this.getArticulo().compareTo(((ItemFactura) o).getArticulo());
+    }
+
+    public int getUnidadesPorBulto()
+    {
+        return unidadesPorBulto;
+    }
+
+    public void setUnidadesPorBulto(int unidadPorBulto)
+    {
+        this.unidadesPorBulto = unidadPorBulto;
+    }
+
+    public int getMinimoVenta()
+    {
+        return minimoVenta;
+    }
+
+    public void setMinimoVenta(int minimoVenta)
+    {
+        this.minimoVenta = minimoVenta;
     }
 }

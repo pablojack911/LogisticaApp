@@ -415,7 +415,6 @@ public class LoginActivity extends AppCompatActivity
 
         private final String mUsuario;
         private final String mPassword;
-        private final String urlString = "http://mhergo.ddns.net:8888/hergomobile/api/loginfletero/";
 
         UserLoginTask(String usuario, String password)
         {
@@ -440,7 +439,7 @@ public class LoginActivity extends AppCompatActivity
             try
             {
 //                res = mControladoraUsuarios.validaUsuario(mUsuario, mPassword);
-                URL url = new URL(urlString + mUsuario);
+                URL url = new URL(CONSTANTES.URL_LOGIN + mUsuario);
                 String resultString = downloadUrl(url);
                 if (resultString.equals("true"))
                 {

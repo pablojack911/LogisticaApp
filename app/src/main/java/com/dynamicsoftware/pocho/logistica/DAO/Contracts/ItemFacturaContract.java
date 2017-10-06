@@ -28,5 +28,7 @@ public class ItemFacturaContract
         public static String _FACTURA_ID = "factura_id";
         public static String _MOTIVO_RECHAZO = "motivo_rechazo";
         public static String _ID_ROW_REF_RECHAZO = "idRowRef";
+        public static String _UNIDADES_POR_BULTO = "unidadesPorBulto";
+        public static String _MINIMO_VENTA= "minimoVenta";
     }
 }

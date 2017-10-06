@@ -66,7 +66,9 @@ public class ControladoraItemFactura extends Controladora
             itemFactura.setDescuento2(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._DESCUENTO_2)));
             itemFactura.setDescuento3(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._DESCUENTO_3)));
             itemFactura.setDescuento4(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._DESCUENTO_4)));
-            itemFactura.setCantidad(cursor.getInt(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._CANTIDAD)));
+            itemFactura.setCantidad(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._CANTIDAD)));
+            itemFactura.setMinimoVenta(cursor.getInt(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._MINIMO_VENTA)));
+            itemFactura.setUnidadesPorBulto(cursor.getInt(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._UNIDADES_POR_BULTO)));
             itemFactura.setImporteFinal(cursor.getDouble(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._IMPORTE_FINAL)));
             itemFacturaArrayList.add(itemFactura);
         }
@@ -151,6 +153,7 @@ public class ControladoraItemFactura extends Controladora
                 ItemFacturaContract.ItemFactura._ID,
                 ItemFacturaContract.ItemFactura._ARTICULO,
                 ItemFacturaContract.ItemFactura._CANTIDAD,
+                ItemFacturaContract.ItemFactura._UNIDADES_POR_BULTO,
                 ItemFacturaContract.ItemFactura._CODIGO_BARRA_BULTO,
                 ItemFacturaContract.ItemFactura._CODIGO_BARRA_UNIDAD,
                 ItemFacturaContract.ItemFactura._DESCRIPCION,
@@ -161,6 +164,7 @@ public class ControladoraItemFactura extends Controladora
                 ItemFacturaContract.ItemFactura._DESCUENTO_4,
                 ItemFacturaContract.ItemFactura._FACTURA_ID,
                 ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO,
+                ItemFacturaContract.ItemFactura._MINIMO_VENTA,
                 ItemFacturaContract.ItemFactura._IMPORTE_FINAL,
                 ItemFacturaContract.ItemFactura._IMPUESTO_INTERNO_UNITARIO,
                 ItemFacturaContract.ItemFactura._PRECIO_FINAL_UNITARIO,
@@ -176,6 +180,7 @@ public class ControladoraItemFactura extends Controladora
         ContentValues contentValues = new ContentValues();
         contentValues.put(ItemFacturaContract.ItemFactura._ARTICULO, itemFactura.getArticulo());
         contentValues.put(ItemFacturaContract.ItemFactura._CANTIDAD, itemFactura.getCantidad());
+        contentValues.put(ItemFacturaContract.ItemFactura._UNIDADES_POR_BULTO, itemFactura.getUnidadesPorBulto());
         contentValues.put(ItemFacturaContract.ItemFactura._CODIGO_BARRA_BULTO, itemFactura.getCodigoBarraBulto());
         contentValues.put(ItemFacturaContract.ItemFactura._CODIGO_BARRA_UNIDAD, itemFactura.getCodigoBarraUnidad());
         contentValues.put(ItemFacturaContract.ItemFactura._DESCRIPCION, itemFactura.getDescripcion());
@@ -186,12 +191,44 @@ public class ControladoraItemFactura extends Controladora
         contentValues.put(ItemFacturaContract.ItemFactura._DESCUENTO_4, itemFactura.getDescuento4());
         contentValues.put(ItemFacturaContract.ItemFactura._FACTURA_ID, itemFactura.getFactura());
         contentValues.put(ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO, itemFactura.getIdRowRefRechazo());
+        contentValues.put(ItemFacturaContract.ItemFactura._MINIMO_VENTA, itemFactura.getMinimoVenta());
         contentValues.put(ItemFacturaContract.ItemFactura._IMPORTE_FINAL, itemFactura.getImporteFinal());
         contentValues.put(ItemFacturaContract.ItemFactura._IMPUESTO_INTERNO_UNITARIO, itemFactura.getImpuestoInternoUnitario());
         contentValues.put(ItemFacturaContract.ItemFactura._PRECIO_FINAL_UNITARIO, itemFactura.getPrecioFinalUnitario());
         contentValues.put(ItemFacturaContract.ItemFactura._PRECIO_NETO_UNITARIO, itemFactura.getPrecioNetoUnitario());
         contentValues.put(ItemFacturaContract.ItemFactura._TASA_IVA, itemFactura.getTasaIva());
         return contentValues;
+    }
+
+    public int limpiar(String usuario)
+    {
+        try
+        {
+            int total = 0;
+            SQLiteDatabase db = helper.getReadableDatabase();
+            String query = "DELETE FROM " + ItemFacturaContract.ItemFactura.TABLE_NAME +
+                    " WHERE " + ItemFacturaContract.ItemFactura._FACTURA_ID + " IN" +
+                    " (SELECT " + FacturaContract.Factura._ID +
+                    " FROM " + FacturaContract.Factura.TABLE_NAME +
+                    " WHERE " + FacturaContract.Factura._CLIENTE + " IN" +
+                    " (SELECT DISTINCT " + RutaDeEntregaContract.RutaDeEntrega._CLIENTE +
+                    " FROM " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME +
+                    " WHERE " + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?))";
+            String[] args = {usuario};
+            Cursor cursor = db.rawQuery(query, args);
+            if (cursor.moveToNext())
+            {
+                total = cursor.getInt(0);
+                cursor.close();
+            }
+            return total;
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG, ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return 0;
     }
 
     @Override

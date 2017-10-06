@@ -56,6 +56,7 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
     private DownloadTask mDownloadTask;
 
     private String usuario;
+    private String fechaActual;
 
 
     @Override
@@ -171,9 +172,13 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
             // Execute the async download.
             cancelDownload();
             String lastDownload = SaveSharedPreferences.getLastDownload(DescargaClientesActivity.this, usuario);
-            String fechaActual = Fecha.obtenerFechaActual();
+            fechaActual = Fecha.obtenerFechaActual();
             if (!lastDownload.equals(fechaActual))
             {
+                ControladoraItemFactura controladoraItemFactura = new ControladoraItemFactura(DescargaClientesActivity.this);
+                controladoraItemFactura.limpiar(usuario);
+                ControladoraFacturas controladoraFacturas = new ControladoraFacturas(DescargaClientesActivity.this);
+                controladoraFacturas.limpiar(usuario);
                 ControladoraRutaDeEntrega controladoraRutaDeEntrega = new ControladoraRutaDeEntrega(DescargaClientesActivity.this);
                 controladoraRutaDeEntrega.limpiar(usuario);
             }
@@ -402,8 +407,10 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
                             itemFactura.setDescuento2(itemsFacturaJSONObject.getDouble("descuento2"));
                             itemFactura.setDescuento3(itemsFacturaJSONObject.getDouble("descuento3"));
                             itemFactura.setDescuento4(itemsFacturaJSONObject.getDouble("descuento4"));
-                            itemFactura.setCantidad(itemsFacturaJSONObject.getInt("cantidad"));
+                            itemFactura.setCantidad(itemsFacturaJSONObject.getDouble("cantidad"));
                             itemFactura.setImporteFinal(itemsFacturaJSONObject.getDouble("importeFinal"));
+                            itemFactura.setUnidadesPorBulto(itemsFacturaJSONObject.getInt("unidadesPorBulto"));
+                            itemFactura.setMinimoVenta(itemsFacturaJSONObject.getInt("minimoVenta"));
                             itemFacturaArrayList.add(itemFactura);
                         }
                     }

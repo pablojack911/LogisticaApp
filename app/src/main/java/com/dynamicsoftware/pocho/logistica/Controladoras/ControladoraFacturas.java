@@ -171,6 +171,34 @@ public class ControladoraFacturas extends Controladora
         return contentValues;
     }
 
+    public int limpiar(String usuario)
+    {
+        try
+        {
+            int total = 0;
+            SQLiteDatabase db = helper.getReadableDatabase();
+            String query = "DELETE FROM " + FacturaContract.Factura.TABLE_NAME +
+                    " WHERE " + FacturaContract.Factura._CLIENTE + " IN" +
+                    " (SELECT DISTINCT " + RutaDeEntregaContract.RutaDeEntrega._CLIENTE +
+                    " FROM " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME +
+                    " WHERE " + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?)";
+            String[] args = {usuario};
+            Cursor cursor = db.rawQuery(query, args);
+            if (cursor.moveToNext())
+            {
+                total = cursor.getInt(0);
+                cursor.close();
+            }
+            return total;
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG, ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
     @Override
     protected int limpiar()
     {

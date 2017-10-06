@@ -44,12 +44,16 @@
     <string name="factura_rechazada">RECHAZADO</string>
     <string name="rechazar_todo">Rechazar todo</string>
     <string name="cantidad_rechazada">Cantidad a rechazar</string>
+    <string name="cantidad_unidades_rechazada">Unidades a rechazar</string>
+    <string name="cantidad_bultos_rechazada">Bultos a rechazar</string>
     <string name="decodificacion_completa">Decodificación completa</string>
     <string name="motivo_rechazo">Motivo rechazo</string>
     <string name="articulo">Articulo</string>
     <string name="descripcion">Descripcion</string>
     <string name="descuento">Descuento</string>
     <string name="cantidad_original">Cantidad en factura</string>
+    <string name="bultos_original">Bultos en factura</string>
+    <string name="unidades_original">Unidades en factura</string>
     <string name="aceptar">Aceptar</string>
     <string name="descuentos">Descuentos</string>
     <string name="descuento1">Descuento 1</string>
