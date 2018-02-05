@@ -163,7 +163,7 @@ public class FinalizaRepartoActivity extends AppCompatActivity implements Downlo
                 URL url = new URL(CONSTANTES.URL_FINALIZA_REPARTO + mUsuario);
                 conn = (HttpURLConnection) url.openConnection();
                 publishProgress("Conectando con el servidor...");
-                conn.setConnectTimeout(60 * 1000);
+                conn.setConnectTimeout(CONSTANTES.TIMEOUT);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                 conn.setRequestProperty("Accept", "application/json");
                 conn.setDoOutput(true);

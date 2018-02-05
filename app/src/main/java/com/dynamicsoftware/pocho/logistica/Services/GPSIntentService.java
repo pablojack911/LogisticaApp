@@ -4,17 +4,15 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.location.Location;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.dynamicsoftware.pocho.logistica.CONSTANTES;
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraPosGPS;
-import com.dynamicsoftware.pocho.logistica.Controladoras.Fecha;
 import com.dynamicsoftware.pocho.logistica.Controladoras.Utiles;
-import com.dynamicsoftware.pocho.logistica.DAO.Contracts.PosGPSContract;
 import com.dynamicsoftware.pocho.logistica.Modelo.PosGPS;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -116,7 +114,7 @@ public class GPSIntentService extends IntentService
         String json = gson.toJson(posGPS, PosGPS.class);
         URL url = new URL(CONSTANTES.URL_ENVIA_POS);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setConnectTimeout(60 * 1000);
+        conn.setConnectTimeout(CONSTANTES.TIMEOUT);
         conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
         conn.setRequestProperty("Accept", "application/json");
         conn.setDoOutput(true);
@@ -129,21 +127,21 @@ public class GPSIntentService extends IntentService
         int res = conn.getResponseCode();
         if (res == 200) //OK
         {
-//            Log.d(TAG, "Grabando en server -> " + res);
+            Log.d(TAG, "Grabando en server -> " + res);
             res = controladorPosicionesGPS.actualizarEnviado(1, posGPS.getId());
-//            Log.d(TAG, "Actualizado en bd -> " + res);
+            Log.d(TAG, "Actualizado en bd -> " + res + "_" + posGPS.getCliente());
         }
     }
 
-    private JSONObject creaJson(PosGPS posGPS) throws JSONException
-    {
-        JSONObject json = new JSONObject();
-        json.put(PosGPSContract.PosGPS._CLIENTE, posGPS.getCliente());
-        json.put(PosGPSContract.PosGPS._USUARIO, posGPS.getUsuario());
-        json.put(PosGPSContract.PosGPS._ESTADO, posGPS.getEstadoEntrega().ordinal());
-        json.put(PosGPSContract.PosGPS._LATITUD, posGPS.getLatitud());
-        json.put(PosGPSContract.PosGPS._LONGITUD, posGPS.getLongitud());
-        json.put(PosGPSContract.PosGPS._FECHA, Fecha.convertir(posGPS.getFecha()));
-        return json;
-    }
+//    private JSONObject creaJson(PosGPS posGPS) throws JSONException
+//    {
+//        JSONObject json = new JSONObject();
+//        json.put(PosGPSContract.PosGPS._CLIENTE, posGPS.getCliente());
+//        json.put(PosGPSContract.PosGPS._USUARIO, posGPS.getUsuario());
+//        json.put(PosGPSContract.PosGPS._ESTADO, posGPS.getEstadoEntrega().ordinal());
+//        json.put(PosGPSContract.PosGPS._LATITUD, posGPS.getLatitud());
+//        json.put(PosGPSContract.PosGPS._LONGITUD, posGPS.getLongitud());
+//        json.put(PosGPSContract.PosGPS._FECHA, Fecha.convertir(posGPS.getFecha()));
+//        return json;
+//    }
 }

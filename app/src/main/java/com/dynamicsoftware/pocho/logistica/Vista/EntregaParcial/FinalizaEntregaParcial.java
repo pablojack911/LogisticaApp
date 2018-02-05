@@ -26,10 +26,14 @@ import com.dynamicsoftware.pocho.logistica.Modelo.RutaDeEntrega;
 import com.dynamicsoftware.pocho.logistica.R;
 import com.google.gson.Gson;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -266,7 +270,7 @@ public class FinalizaEntregaParcial extends AppCompatActivity
             {
                 URL url = new URL(CONSTANTES.URL_FINALIZA_ENTREGA);
                 conn = (HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(60 * 1000);
+                conn.setConnectTimeout(CONSTANTES.TIMEOUT);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                 conn.setRequestProperty("Accept", "application/json");
                 conn.setDoOutput(true);
@@ -294,6 +298,44 @@ public class FinalizaEntregaParcial extends AppCompatActivity
                 publishProgress(ex.getLocalizedMessage());
                 Log.e(TAG, ex.getLocalizedMessage());
             }
+//            try
+//            {
+//                // Instantiate the RequestQueue.
+//                RequestQueue queue = Volley.newRequestQueue(FinalizaEntregaParcial.this);
+//                String url = CONSTANTES.URL_FINALIZA_ENTREGA;
+//
+//                // Request a string response from the provided URL.
+//                JsonObjectRequest request = new JsonObjectRequest(url, new JSONObject(json), new Response.Listener<JSONObject>()
+//                {
+//                    @Override
+//                    public void onResponse(JSONObject response)
+//                    {
+//                        try
+//                        {
+//                            Log.v("Response:%n %s", response.toString(4));
+//                        }
+//                        catch (JSONException jex)
+//                        {
+//                            jex.printStackTrace();
+//                        }
+//                    }
+//                }, new Response.ErrorListener()
+//                {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error)
+//                    {
+//                        Log.e("Error: ", error.getMessage());
+//                    }
+//                });
+//                request.setRetryPolicy(new DefaultRetryPolicy((int) TimeUnit.SECONDS.toMillis(3600), DefaultRetryPolicy.DEFAULT_MAX_RETRIES, DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//                // Add the request to the RequestQueue.
+//                queue.add(request);
+//            }
+//            catch (Exception ex)
+//            {
+//                publishProgress(ex.getLocalizedMessage());
+//                Log.e(TAG, ex.getLocalizedMessage());
+//            }
             return null;
         }
     }

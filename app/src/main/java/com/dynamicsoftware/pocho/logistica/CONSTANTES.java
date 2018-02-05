@@ -42,4 +42,6 @@ public class CONSTANTES
     public static final String FACTURAS_PARCIALES = "facturas-parciales-key";
     public static final String EMPRESA_MAYORISTA = "03";
     public static final String MOTIVO_RECHAZADO_SELECCIONADO = "motivo-seleccionado-key";
+
+    public static final int TIMEOUT = 3600*1000;
 }
