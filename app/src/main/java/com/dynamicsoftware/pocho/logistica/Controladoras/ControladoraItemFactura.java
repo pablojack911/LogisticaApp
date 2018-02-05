@@ -98,8 +98,21 @@ public class ControladoraItemFactura extends Controladora
         long ok = -1;
         try
         {
-            String selection = ItemFacturaContract.ItemFactura._FACTURA_ID + " =? and " + ItemFacturaContract.ItemFactura._ARTICULO + "=?";
-            String[] selectionArgs = {String.valueOf(itemFactura.getFactura()), itemFactura.getArticulo()};
+            String selection = ItemFacturaContract.ItemFactura._FACTURA_ID + " =? and " +
+                    ItemFacturaContract.ItemFactura._ARTICULO + "=? and " +
+                    ItemFacturaContract.ItemFactura._PRECIO_FINAL_UNITARIO + "=? and " +
+                    ItemFacturaContract.ItemFactura._DESCUENTO_1 + "=? and " +
+                    ItemFacturaContract.ItemFactura._DESCUENTO_2 + "=? and " +
+                    ItemFacturaContract.ItemFactura._DESCUENTO_3 + "=? and " +
+                    ItemFacturaContract.ItemFactura._DESCUENTO_4 + "=?";
+            //TODO: agregar filtro por dtos y precio
+            String[] selectionArgs = {String.valueOf(itemFactura.getFactura()),
+                                      itemFactura.getArticulo(),
+                                      String.valueOf(itemFactura.getPrecioFinalUnitario()),
+                                      String.valueOf(itemFactura.getDescuento1()),
+                                      String.valueOf(itemFactura.getDescuento2()),
+                                      String.valueOf(itemFactura.getDescuento3()),
+                                      String.valueOf(itemFactura.getDescuento4())};
             Cursor cursor = obtenerCursor(selection, selectionArgs);
             if (cursor.moveToNext())
             {
