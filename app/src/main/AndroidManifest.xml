@@ -14,10 +14,8 @@
     <uses-feature android:name="android.hardware.location.gps"/>
 
     <application
-        android:allowBackup="true"
         android:icon="@drawable/ic_logistica"
         android:label="@string/app_name"
-        android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.google.android.gps.version"
@@ -35,7 +33,8 @@
         <activity android:name=".DescargaClientesActivity"/>
 
         <service android:name=".Services.GPSIntentService"/>
-        <service android:name=".Services.GPSLocationService"/>
+        <!--<service android:name=".Services.GPSLocationService"/>-->
+        <service android:name=".Services.GPSLocationServiceDos" />
 
         <receiver android:name=".Services.RecieverCall">
             <intent-filter>
@@ -44,17 +43,23 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".FinalizaRepartoActivity">
+        <activity android:name=".FinalizaRepartoActivity"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
-        <activity android:name=".Vista.EntregaParcial.ActivityListadoFactura">
+        <activity android:name=".Vista.EntregaParcial.ActivityListadoFactura"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
-        <activity android:name=".Vista.EntregaParcial.FinalizaEntregaParcial">
+        <activity android:name=".Vista.EntregaParcial.FinalizaEntregaParcial"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
-        <activity android:name=".Vista.VPRutaDeEntrega.VisitaMultipleClientes">
+        <activity android:name=".Vista.VPRutaDeEntrega.VisitaMultipleClientes"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
-        <activity android:name=".Vista.EstadoMercaderia.EstadoMercaderiaActivity">
+        <activity android:name=".Vista.EstadoMercaderia.EstadoMercaderiaActivity"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
-        <activity android:name=".Vista.PedidoRechazado.PedidoRechazado">
+        <activity android:name=".Vista.PedidoRechazado.PedidoRechazado"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
     </application>
 

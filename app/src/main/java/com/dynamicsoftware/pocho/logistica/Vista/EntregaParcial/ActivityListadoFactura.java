@@ -486,6 +486,7 @@ public class ActivityListadoFactura extends AppCompatActivity implements DialogI
                 double cantidadRechazadaTotal = cantidadBultosRechazados + (cantidadUnidadesRechazadas / 100);
                 pfRechazadoBulto = pfuBulto * cantidadBultosRechazados;
                 pfRechazadoUnitario = pfuUnidad * cantidadUnidadesRechazadas;
+                //TODO: REVISAR PRECIOS Y DESCUENTOS
                 pfRechazado = pfRechazadoBulto + pfRechazadoUnitario;
 
                 if (cantidadRechazadaTotal > 0)
