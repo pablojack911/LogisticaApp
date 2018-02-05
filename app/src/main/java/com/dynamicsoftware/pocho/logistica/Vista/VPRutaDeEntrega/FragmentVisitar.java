@@ -133,7 +133,7 @@ public class FragmentVisitar extends Fragment
                         {
                             RutaDeEntrega rutaDeEntrega = (RutaDeEntrega) parent.getItemAtPosition(position);
                             //CHECK_IN
-                            controladoraPosGPS.creaIntentGrabar(getActivity(), rutaDeEntrega.getCliente(), usuario, ESTADO_ENTREGA.A_VISITAR);
+                            controladoraPosGPS.creaIntentGrabar( rutaDeEntrega.getCliente(), usuario, ESTADO_ENTREGA.A_VISITAR);
                             Intent intent = new Intent(getContext(), VisitaCliente.class);
                             intent.putExtra(RUTA_DE_ENTREGA, rutaDeEntrega);
                             startActivity(intent);
@@ -141,7 +141,7 @@ public class FragmentVisitar extends Fragment
                         else
                         {
                             //CHECK_IN
-                            controladoraPosGPS.creaIntentGrabar(getActivity(), "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
+                            controladoraPosGPS.creaIntentGrabar("NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
                             Utiles.displayPromptForEnablingGPS(getActivity());
                         }
                     }
@@ -235,7 +235,7 @@ public class FragmentVisitar extends Fragment
         for (RutaDeEntrega rutaDeEntrega : visitaMultiple)
         {
             //CHECK_IN
-            controladoraPosGPS.creaIntentGrabar(getContext(), rutaDeEntrega.getCliente(), usuario, rutaDeEntrega.getEstadoEntrega());
+            controladoraPosGPS.creaIntentGrabar( rutaDeEntrega.getCliente(), usuario, rutaDeEntrega.getEstadoEntrega());
         }
         Intent intent = new Intent(getActivity(), VisitaMultipleClientes.class);
         intent.putExtra(CONSTANTES.CLIENTES_VISITA_MULTIPLE, visitaMultiple);

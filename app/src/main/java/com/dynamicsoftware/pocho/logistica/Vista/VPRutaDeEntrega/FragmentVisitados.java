@@ -159,7 +159,7 @@ public class FragmentVisitados extends Fragment
                         }
                         else
                         {
-                            controladoraPosGPS.creaIntentGrabar(getActivity(), "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
+                            controladoraPosGPS.creaIntentGrabar( "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
                             Utiles.displayPromptForEnablingGPS(getActivity());
                         }
                     }

@@ -110,7 +110,7 @@ public class VisitaMultipleClientes extends AppCompatActivity
                         }
                         else
                         {
-                            controladoraPosGPS.creaIntentGrabar(VisitaMultipleClientes.this, "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
+                            controladoraPosGPS.creaIntentGrabar( "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
                             Utiles.displayPromptForEnablingGPS(VisitaMultipleClientes.this);
                         }
                     }

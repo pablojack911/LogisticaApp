@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.dynamicsoftware.pocho.logistica.CONSTANTES;
@@ -24,10 +25,12 @@ import java.util.ArrayList;
 public class ControladoraPosGPS extends Controladora
 {
     private static final String TAG = "ControladoraPosGPS";
+    private Context contextGps;
 
     public ControladoraPosGPS(Context context)
     {
         helper = DatabaseHelper.getInstance(context);
+        this.contextGps=context;
     }
 
     public ArrayList<PosGPS> obtenerPosicionesPendientes()
@@ -59,16 +62,16 @@ public class ControladoraPosGPS extends Controladora
         return posGPSArrayList;
     }
 
-    public void creaIntentGrabar(Context context, String cliente, String usuario, ESTADO_ENTREGA estadoEntrega)
+    public void creaIntentGrabar(String cliente, String usuario, ESTADO_ENTREGA estadoEntrega)
     {
         PosGPS pos = new PosGPS();
         pos.setCliente(cliente);
         pos.setUsuario(usuario);
         pos.setEstadoEntrega(estadoEntrega);
         pos.setFecha(new Date(0)); //sino palma
-        Intent mServiceIntent = new Intent(context, GPSIntentService.class);
+        Intent mServiceIntent = new Intent(contextGps, GPSIntentService.class);
         mServiceIntent.putExtra(CONSTANTES.POSICION_GPS_KEY, pos);
-        context.startService(mServiceIntent);
+        contextGps.startService(mServiceIntent);
     }
 
     @Override
@@ -139,14 +142,9 @@ public class ControladoraPosGPS extends Controladora
     protected String[] crearProyeccionColumnas()
     {
         //COLUMNAS A TRAER
-        String[] projection = {PosGPSContract.PosGPS._ID,
-                PosGPSContract.PosGPS._USUARIO,
-                PosGPSContract.PosGPS._CLIENTE,
-                PosGPSContract.PosGPS._ESTADO,
-                PosGPSContract.PosGPS._FECHA,
-                PosGPSContract.PosGPS._LATITUD,
-                PosGPSContract.PosGPS._LONGITUD,
-                PosGPSContract.PosGPS._ENVIADO};
+        String[] projection = {
+                PosGPSContract.PosGPS._ID, PosGPSContract.PosGPS._USUARIO, PosGPSContract.PosGPS._CLIENTE, PosGPSContract.PosGPS._ESTADO, PosGPSContract.PosGPS._FECHA, PosGPSContract.PosGPS._LATITUD, PosGPSContract.PosGPS._LONGITUD, PosGPSContract.PosGPS._ENVIADO
+        };
         return projection;
     }
 
@@ -166,8 +164,27 @@ public class ControladoraPosGPS extends Controladora
     }
 
     @Override
-    protected int limpiar()
+    public int limpiar()
     {
+        try
+        {
+            int total = 0;
+            SQLiteDatabase db = helper.getReadableDatabase();
+            String query = "DELETE FROM " + PosGPSContract.PosGPS.TABLE_NAME + " WHERE " + PosGPSContract.PosGPS._ENVIADO + " =?";
+            String[] args = {String.valueOf(1)};
+            Cursor cursor = db.rawQuery(query, args);
+            if (cursor.moveToNext())
+            {
+                total = cursor.getInt(0);
+                cursor.close();
+            }
+            return total;
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG, ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
         return 0;
     }
 }

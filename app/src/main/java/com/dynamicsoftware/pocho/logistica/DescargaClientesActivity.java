@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraFacturas;
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraItemFactura;
+import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraPosGPS;
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraRutaDeEntrega;
 import com.dynamicsoftware.pocho.logistica.Controladoras.Descarga.DownloadCallback;
 import com.dynamicsoftware.pocho.logistica.Controladoras.Fecha;
@@ -181,6 +182,8 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
                 controladoraFacturas.limpiar(usuario);
                 ControladoraRutaDeEntrega controladoraRutaDeEntrega = new ControladoraRutaDeEntrega(DescargaClientesActivity.this);
                 controladoraRutaDeEntrega.limpiar(usuario);
+                ControladoraPosGPS controladoraPosGPS = new ControladoraPosGPS(DescargaClientesActivity.this);
+                controladoraPosGPS.limpiar();
             }
             mDownloadTask = new DownloadTask(DescargaClientesActivity.this);
             mDownloadTask.execute(CONSTANTES.URL_DESCARGA + usuario);
@@ -427,7 +430,7 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
             HttpURLConnection conn;
             URL url = new URL(CONSTANTES.URL_FINALIZA_DESCARGA + usuario);
             conn = (HttpURLConnection) url.openConnection();
-            conn.setConnectTimeout(60 * 1000);
+            conn.setConnectTimeout(CONSTANTES.TIMEOUT);
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             conn.setRequestProperty("Accept", "application/json");
             conn.setDoOutput(true);
@@ -578,9 +581,9 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
             {
                 connection = (HttpURLConnection) url.openConnection();
                 // Timeout for reading InputStream arbitrarily set to 3000ms.
-                connection.setReadTimeout(60 * 1000);
+                connection.setReadTimeout(3600 * 1000);
                 // Timeout for connection.connect() arbitrarily set to 3000ms.
-                connection.setConnectTimeout(60 * 1000);
+                connection.setConnectTimeout(CONSTANTES.TIMEOUT);
                 // For this use case, set HTTP method to GET.
                 connection.setRequestMethod("GET");
                 // Already true by default but setting just in case; needs to be true since this request
