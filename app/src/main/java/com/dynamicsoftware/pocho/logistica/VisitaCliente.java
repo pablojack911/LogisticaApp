@@ -1,7 +1,6 @@
 package com.dynamicsoftware.pocho.logistica;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -58,6 +57,9 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     Button btnSinVisitar;
     Button btnVolverLuego;
 
+    private ProgressDialog progressDialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -91,8 +93,11 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         controladoraFacturas = new ControladoraFacturas(VisitaCliente.this);
         controladoraItemFactura = new ControladoraItemFactura(VisitaCliente.this);
 
-        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos(null, null);
+        progressDialog = new ProgressDialog(VisitaCliente.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
+        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos(null, null);
 //        //CHECK IN SE HACE EN FragmentVisitar unicamente
 //        controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, mRutaDeEntrega.getCliente(), usuario, mRutaDeEntrega.getEstado());
     }
@@ -117,7 +122,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     {
         controladoraRutaDeEntrega.actualizaEstado(estado_entrega, mRutaDeEntrega.getId());
         //CHECK OUT
-        controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, mRutaDeEntrega.getCliente(), usuario, estado_entrega);
+        controladoraPosGPS.creaIntentGrabar(mRutaDeEntrega.getCliente(), usuario, estado_entrega);
         finalizar();
     }
 
@@ -126,6 +131,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     {
 //        controladoraRutaDeEntrega.cerrar();
 //        controladoraPosGPS.cerrar();
+        dismissProgressDialog();
         super.onDestroy();
     }
 
@@ -169,7 +175,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         }
         else
         {
-            controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, "NOGPS", usuario, ESTADO_ENTREGA.SIN_VISITAR);
+            controladoraPosGPS.creaIntentGrabar("NOGPS", usuario, ESTADO_ENTREGA.SIN_VISITAR);
             Utiles.displayPromptForEnablingGPS(VisitaCliente.this);
         }
     }
@@ -185,7 +191,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         }
         else
         {
-            controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, "NOGPS", usuario, ESTADO_ENTREGA.LOCAL_CERRADO);
+            controladoraPosGPS.creaIntentGrabar("NOGPS", usuario, ESTADO_ENTREGA.LOCAL_CERRADO);
             Utiles.displayPromptForEnablingGPS(VisitaCliente.this);
         }
     }
@@ -201,7 +207,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         }
         else
         {
-            controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, "NOGPS", usuario, ESTADO_ENTREGA.ENTREGA_TOTAL);
+            controladoraPosGPS.creaIntentGrabar("NOGPS", usuario, ESTADO_ENTREGA.ENTREGA_TOTAL);
             Utiles.displayPromptForEnablingGPS(VisitaCliente.this);
         }
     }
@@ -220,7 +226,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         }
         else
         {
-            controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, "NOGPS", usuario, ESTADO_ENTREGA.ENTREGA_PARCIAL);
+            controladoraPosGPS.creaIntentGrabar("NOGPS", usuario, ESTADO_ENTREGA.ENTREGA_PARCIAL);
             Utiles.displayPromptForEnablingGPS(VisitaCliente.this);
         }
     }
@@ -272,7 +278,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         }
         else
         {
-            controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, "NOGPS", usuario, ESTADO_ENTREGA.RECHAZADO);
+            controladoraPosGPS.creaIntentGrabar("NOGPS", usuario, ESTADO_ENTREGA.RECHAZADO);
             Utiles.displayPromptForEnablingGPS(VisitaCliente.this);
         }
     }
@@ -368,42 +374,48 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         }
     }
 
+    private void dismissProgressDialog()
+    {
+        if (progressDialog != null && progressDialog.isShowing())
+        {
+            progressDialog.dismiss();
+        }
+    }
+
 
     private class EnviarRechazoAsyncTask extends AsyncTask<Void, String, Boolean>
     {
         AsyncResponse delegate = null;
         RutaDeEntrega mRutaDeEntrega;
-        Context context;
-        ProgressDialog progressDialog;
 
-        public EnviarRechazoAsyncTask(Context context, RutaDeEntrega rutaDeEntrega, AsyncResponse delegate)
+        public EnviarRechazoAsyncTask(VisitaCliente context, RutaDeEntrega rutaDeEntrega, AsyncResponse delegate)
         {
             this.delegate = delegate;
             this.mRutaDeEntrega = rutaDeEntrega;
-            this.context = context;
         }
 
         @Override
         protected void onPostExecute(Boolean result)
         {
             super.onPostExecute(result);
+            dismissProgressDialog();
             delegate.processFinish(result);
-            progressDialog.dismiss();
+            //todo: error cuando intenta hacer dismiss
         }
 
         @Override
         protected void onProgressUpdate(String... values)
         {
-            progressDialog.setMessage(values[0]);
+            if (values.length > 0)
+            {
+                progressDialog.setMessage(values[0]);
+            }
         }
 
         @Override
         protected void onPreExecute()
         {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setCancelable(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.show();
         }
 
@@ -420,7 +432,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
                 URL url = new URL(CONSTANTES.URL_FINALIZA_ENTREGA);
                 conn = (HttpURLConnection) url.openConnection();
                 publishProgress("Conectando con el servidor...");
-                conn.setConnectTimeout(60 * 1000);
+                conn.setConnectTimeout(CONSTANTES.TIMEOUT);
                 conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
                 conn.setRequestProperty("Accept", "application/json");
                 conn.setDoOutput(true);
