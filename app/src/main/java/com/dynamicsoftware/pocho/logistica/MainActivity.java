@@ -24,6 +24,7 @@ import android.view.MenuItem;
 
 import com.dynamicsoftware.pocho.logistica.Controladoras.SaveSharedPreferences;
 import com.dynamicsoftware.pocho.logistica.Services.GPSLocationService;
+import com.dynamicsoftware.pocho.logistica.Services.GPSLocationServiceDos;
 import com.dynamicsoftware.pocho.logistica.Vista.EstadoMercaderia.EstadoMercaderiaActivity;
 import com.dynamicsoftware.pocho.logistica.Vista.VPRutaDeEntrega.FragmentVisitados;
 import com.dynamicsoftware.pocho.logistica.Vista.VPRutaDeEntrega.FragmentVisitar;
@@ -47,8 +48,10 @@ public class MainActivity extends AppCompatActivity
         {
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, CONSTANTES.REQUEST_PERMISSION_CODE);
         }
-        startService(new Intent(this, GPSLocationService.class));
-
+        else
+        {
+            startService(new Intent(this, GPSLocationServiceDos.class));
+        }
         setTitle(getResources().getString(R.string.app_name) + " - " + SaveSharedPreferences.getUserName(MainActivity.this));
 
         mPageAdapter = new PageAdapter_RutaDeEntrega(getSupportFragmentManager());
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity
                 {
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)
                     {
-                        startService(new Intent(this, GPSLocationService.class));
+                        startService(new Intent(this, GPSLocationServiceDos.class));
                     }
                     else
                     {

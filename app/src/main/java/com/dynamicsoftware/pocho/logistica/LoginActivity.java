@@ -25,7 +25,8 @@ import android.widget.TextView;
 
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraUsuarios;
 import com.dynamicsoftware.pocho.logistica.Controladoras.SaveSharedPreferences;
-import com.dynamicsoftware.pocho.logistica.Services.GPSLocationService;
+import com.dynamicsoftware.pocho.logistica.Services.GPSLocationServiceDos;
+//import com.dynamicsoftware.pocho.logistica.Services.GPSLocationService;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -122,7 +123,7 @@ public class LoginActivity extends AppCompatActivity
                 {
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)
                     {
-                        startService(new Intent(this, GPSLocationService.class));
+                        startService(new Intent(this, GPSLocationServiceDos.class));
                     }
                     else
                     {
@@ -482,9 +483,9 @@ public class LoginActivity extends AppCompatActivity
             {
                 connection = (HttpURLConnection) url.openConnection();
                 // Timeout for reading InputStream arbitrarily set to 3000ms.
-                connection.setReadTimeout(3000);
+                connection.setReadTimeout(3600*1000);
                 // Timeout for connection.connect() arbitrarily set to 3000ms.
-                connection.setConnectTimeout(3000);
+                connection.setConnectTimeout(3600*1000);
                 // For this use case, set HTTP method to GET.
                 connection.setRequestMethod("GET");
                 // Already true by default but setting just in case; needs to be true since this request

@@ -15,6 +15,6 @@ public class RecieverCall extends BroadcastReceiver
     public void onReceive(Context context, Intent intent)
     {
         Log.i("Service Stops", "Ohhhhhhh");
-        context.startService(new Intent(context, GPSLocationService.class));;
+        context.startService(new Intent(context, GPSLocationServiceDos.class));
     }
 }
