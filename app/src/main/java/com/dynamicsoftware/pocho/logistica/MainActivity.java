@@ -23,7 +23,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.dynamicsoftware.pocho.logistica.Controladoras.SaveSharedPreferences;
-import com.dynamicsoftware.pocho.logistica.Services.GPSLocationService;
 import com.dynamicsoftware.pocho.logistica.Services.GPSLocationServiceDos;
 import com.dynamicsoftware.pocho.logistica.Vista.EstadoMercaderia.EstadoMercaderiaActivity;
 import com.dynamicsoftware.pocho.logistica.Vista.VPRutaDeEntrega.FragmentVisitados;

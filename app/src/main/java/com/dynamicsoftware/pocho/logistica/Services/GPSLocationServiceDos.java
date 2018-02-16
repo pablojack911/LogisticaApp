@@ -51,6 +51,7 @@ public class GPSLocationServiceDos extends Service
             {
                 for (Location location : locationResult.getLocations())
                 {
+                    SaveSharedPreferences.setLastKnownLocation(getApplicationContext(), location);
                     procesaPosicion(location);
                 }
             }
