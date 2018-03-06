@@ -22,6 +22,7 @@ import java.sql.Date;
 
 /**
  * Created by pinsua on 30/01/2018.
+ * Lelo
  */
 
 public class GPSLocationServiceDos extends Service
@@ -91,9 +92,9 @@ public class GPSLocationServiceDos extends Service
             pos.setLatitud(Float.valueOf(String.valueOf(location.getLatitude())));
             pos.setLongitud(Float.valueOf(String.valueOf(location.getLongitude())));
             pos.setFecha(new Date(location.getTime()));
+            Intent mServiceIntent = new Intent(getApplicationContext(), GPSIntentService.class);
+            mServiceIntent.putExtra(CONSTANTES.POSICION_GPS_KEY, pos);
+            startService(mServiceIntent);
         }
-        Intent mServiceIntent = new Intent(getApplicationContext(), GPSIntentService.class);
-        mServiceIntent.putExtra(CONSTANTES.POSICION_GPS_KEY, pos);
-        startService(mServiceIntent);
     }
 }

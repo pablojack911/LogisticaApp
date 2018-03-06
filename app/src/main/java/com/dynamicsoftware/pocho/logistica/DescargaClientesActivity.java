@@ -89,11 +89,11 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
 
     private void bindUI()
     {
-        tvProgreso = (TextView) findViewById(R.id.tvProgreso);
-        tvProgresoSecundario = (TextView) findViewById(R.id.tvProgresoSecundario);
-        tvProgresoTerciario = (TextView) findViewById(R.id.tvProgresoTerciario);
-        descarga_progreso = (ProgressBar) findViewById(R.id.descarga_progress);
-        btnTryAgain = (Button) findViewById(R.id.btn_try_again);
+        tvProgreso = findViewById(R.id.tvProgreso);
+        tvProgresoSecundario = findViewById(R.id.tvProgresoSecundario);
+        tvProgresoTerciario = findViewById(R.id.tvProgresoTerciario);
+        descarga_progreso = findViewById(R.id.descarga_progress);
+        btnTryAgain = findViewById(R.id.btn_try_again);
         btnTryAgain.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -146,10 +146,8 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
     @Override
     public NetworkInfo getActiveNetworkInfo()
     {
-        ConnectivityManager connectivityManager =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return networkInfo;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager != null ? connectivityManager.getActiveNetworkInfo() : null;
     }
 
     @Override
@@ -172,19 +170,7 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
         {
             // Execute the async download.
             cancelDownload();
-            String lastDownload = SaveSharedPreferences.getLastDownload(DescargaClientesActivity.this, usuario);
-            fechaActual = Fecha.obtenerFechaActual();
-            if (!lastDownload.equals(fechaActual))
-            {
-                ControladoraItemFactura controladoraItemFactura = new ControladoraItemFactura(DescargaClientesActivity.this);
-                controladoraItemFactura.limpiar(usuario);
-                ControladoraFacturas controladoraFacturas = new ControladoraFacturas(DescargaClientesActivity.this);
-                controladoraFacturas.limpiar(usuario);
-                ControladoraRutaDeEntrega controladoraRutaDeEntrega = new ControladoraRutaDeEntrega(DescargaClientesActivity.this);
-                controladoraRutaDeEntrega.limpiar(usuario);
-                ControladoraPosGPS controladoraPosGPS = new ControladoraPosGPS(DescargaClientesActivity.this);
-                controladoraPosGPS.limpiar();
-            }
+
             mDownloadTask = new DownloadTask(DescargaClientesActivity.this);
             mDownloadTask.execute(CONSTANTES.URL_DESCARGA + usuario);
             mDownloading = true;
@@ -237,9 +223,7 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
             if (mCallback != null)
             {
                 NetworkInfo networkInfo = mCallback.getActiveNetworkInfo();
-                if (networkInfo == null || !networkInfo.isConnected() ||
-                        (networkInfo.getType() != ConnectivityManager.TYPE_WIFI
-                                && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE))
+                if (networkInfo == null || !networkInfo.isConnected() || (networkInfo.getType() != ConnectivityManager.TYPE_WIFI && networkInfo.getType() != ConnectivityManager.TYPE_MOBILE))
                 {
                     // If no connectivity, cancel task and update Callback with null data.
                     mCallback.updateFromDownload(null);
@@ -254,6 +238,19 @@ public class DescargaClientesActivity extends AppCompatActivity implements Downl
         @Override
         protected DownloadTask.Result doInBackground(String... urls)
         {
+            String lastDownload = SaveSharedPreferences.getLastDownload(DescargaClientesActivity.this, usuario);
+            fechaActual = Fecha.obtenerFechaActual();
+            if (!lastDownload.equals(fechaActual))
+            {
+                ControladoraItemFactura controladoraItemFactura = new ControladoraItemFactura(DescargaClientesActivity.this);
+                controladoraItemFactura.limpiar(usuario);
+                ControladoraFacturas controladoraFacturas = new ControladoraFacturas(DescargaClientesActivity.this);
+                controladoraFacturas.limpiar(usuario);
+                ControladoraRutaDeEntrega controladoraRutaDeEntrega = new ControladoraRutaDeEntrega(DescargaClientesActivity.this);
+                controladoraRutaDeEntrega.limpiar(usuario);
+                ControladoraPosGPS controladoraPosGPS = new ControladoraPosGPS(DescargaClientesActivity.this);
+                controladoraPosGPS.limpiar();
+            }
             DownloadTask.Result result = null;
             if (!isCancelled() && urls != null && urls.length > 0)
             {
