@@ -13,5 +13,6 @@ public class MotivoRechazoFacturaContract
         public static final String TABLE_NAME = "MotivoRechazoFactura";
         public static final String _CODIGO = "codigo";
         public static final String _DESCRIPCION = "descripcion";
+        public static final String _PRIORIDAD = "prioridad";
     }
 }

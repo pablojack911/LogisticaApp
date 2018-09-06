@@ -73,6 +73,9 @@ public class CreateIndexes
     public static String MotivoRechazoFactura_descripcion = "CREATE INDEX IF NOT EXISTS MotivoRechazoFactura_descripcion on " +
             MotivoRechazoFacturaContract.MotivoRechazoFactura.TABLE_NAME + " (" + MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION + " asc)";
 
+    public static String MotivoRechazoFactura_prioridad = "CREATE INDEX IF NOT EXISTS MotivoRechazoFactura_prioridad on " +
+            MotivoRechazoFacturaContract.MotivoRechazoFactura.TABLE_NAME + " (" + MotivoRechazoFacturaContract.MotivoRechazoFactura._PRIORIDAD + " asc)";
+
     public static String ItemFactura_articulo = "CREATE INDEX IF NOT EXISTS Factura_articulo on " +
             ItemFacturaContract.ItemFactura.TABLE_NAME + " (" + ItemFacturaContract.ItemFactura._ARTICULO + " asc)";
 

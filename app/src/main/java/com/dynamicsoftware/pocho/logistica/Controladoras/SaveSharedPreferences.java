@@ -75,22 +75,22 @@ public class SaveSharedPreferences
         return getSharedPreferences(ctx).getString(LAST_DOWNLOAD + "_" + usuario, "");
     }
 
-    public static void setLastKnownLocation(Context ctx, Location location)
-    {
-        if (location.getLatitude() != 0)
-        {
-            SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
-            Gson gson = new Gson();
-            String json = gson.toJson(location);
-            editor.putString(LAST_KNOWN_LOCATION, json);
-            editor.apply();
-        }
-    }
+//    public static void setLastKnownLocation(Context ctx, Location location)
+//    {
+//        if (location.getLatitude() != 0)
+//        {
+//            SharedPreferences.Editor editor = getSharedPreferences(ctx).edit();
+//            Gson gson = new Gson();
+//            String json = gson.toJson(location);
+//            editor.putString(LAST_KNOWN_LOCATION, json);
+//            editor.apply();
+//        }
+//    }
 
-    public static Location getLastKnownLocation(Context ctx)
-    {
-        String json = getSharedPreferences(ctx).getString(LAST_KNOWN_LOCATION, "");
-        Gson gson = new Gson();
-        return gson.fromJson(json, Location.class);
-    }
+//    public static Location getLastKnownLocation(Context ctx)
+//    {
+//        String json = getSharedPreferences(ctx).getString(LAST_KNOWN_LOCATION, "");
+//        Gson gson = new Gson();
+//        return gson.fromJson(json, Location.class);
+//    }
 }

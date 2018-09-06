@@ -57,11 +57,11 @@ public class Utiles
 //        }
 //        return bestLocation;
 //    }
-    public static Location obtenerUbicacion(Context context)
-    {
-        Location bestLocation = SaveSharedPreferences.getLastKnownLocation(context);
-        return bestLocation;
-    }
+//    public static Location obtenerUbicacion(Context context)
+//    {
+//        Location bestLocation = SaveSharedPreferences.getLastKnownLocation(context);
+//        return bestLocation;
+//    }
 
     public static boolean GPSActivado(Context context)
     {

@@ -128,35 +128,37 @@ public class MockData
             "('C8895','FA','0003-00009353','10',88.93,311.27,0,0,'00282100',1,1482.23,1882.43)";
 
     public static String MotivoRechazoFactura = "INSERT INTO " + MotivoRechazoFacturaContract.MotivoRechazoFactura.TABLE_NAME + " (" +
-            MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO + "," +
-            MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION + ") VALUES " +
-            "('011','Cerrado')," +
-            "('024','Desconforme por sop')," +
-            "('013','Difiere fecha de entrega')," +
-            "('016','Difiere razon social')," +
-            "('019','Error carga deposito')," +
-            "('020','Error de impresion')," +
-            "('008','Esta mal facturado')," +
-            "('014','Fuera de horario')," +
-            "('010','Fuera de zona')," +
-            "('007','La direccion no existe')," +
-            "('003','No era la mercaderia pedida')," +
-            "('028','No es el precio acordado')," +
-            "('004','No estaba el responsable')," +
-            "('001','No habia pedido')," +
-            "('021','No hay mercd stock')," +
-            "('023','No llevo el sin cargo')," +
-            "('005','No recibe entregas parciales')," +
-            "('012','No recibe por cambios')," +
-            "('027','No recibe, fecha corta')," +
-            "('026','No retira, no tiene la mercaderia')," +
-            "('006','No se pudo llegar con el reparto')," +
-            "('015','No tenia envases')," +
-            "('002','No tiene dinero')," +
-            "('017','Pedido repetido')," +
-            "('999','Por retiro de mercaderia')," +
-            "('018','Refacturacion')," +
-            "('009','Rotura de mercaderia')," +
-            "('025','Tiene mercaderia')," +
-            "('022','Zona peligrosa')";
+                                                MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO + "," +
+                                                MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION +", "+
+                                                MotivoRechazoFacturaContract.MotivoRechazoFactura._PRIORIDAD + ") VALUES " +
+                                                "('002','No tiene dinero',1)," +
+                                                "('666','No quiso recibir',2)," +
+                                                "('001','No habia pedido',3)," +
+                                                "('003','No era la mercaderia pedida',4)," +
+                                                "('028','No es el precio acordado',5)," +
+                                                "('021','Faltante - Sin stock',6)," +
+                                                "('004','No estaba el responsable',7)," +
+                                                "('012','No recibe por cambios',8)," +
+                                                "('024','Disconforme por SOP',9)," +
+                                                "('015','No tenia envases',10)," +
+                                                "('009','Rotura de mercaderia',11)," +
+                                                "('023','No llevo el sin cargo',12)," +
+                                                "('008','Esta mal facturado',13)," +
+                                                "('020','Error de impresion',14)";
+//                                                "('011','Cerrado',15)," +
+//                                                "('006','Sin visitar',16)";
+    //"('016','Difiere razon social')," +
+    //"('019','Error carga deposito')," +
+    //"('010','Fuera de zona')," +
+    //"('007','La direccion no existe')," +
+    //"('027','No recibe, fecha corta')," +
+    //"('018','Refacturacion')," +
+    //"('022','Zona peligrosa')";
+    //"('013','Difiere fecha de entrega')," +
+    //"('014','Fuera de horario')," +
+    //"('005','No recibe entregas parciales')," +
+    //"('026','No retira, no tiene la mercaderia')," +
+    //"('017','Pedido repetido')," +
+    //"('025','Tiene mercaderia')," +
+    //"('999','Por retiro de mercaderia')," +
 }

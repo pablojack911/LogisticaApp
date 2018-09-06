@@ -38,10 +38,13 @@ public class CONSTANTES
     public static final int PEDIDO_RECHAZADO_INTENT = 4;
     public static final String ID_RUTA_DE_ENTREGA = "ruta-entrega-id-key";
     public static final String CLIENTES_VISITA_MULTIPLE = "multi-clientes-visita";
+    public static final String RESTABLECE_ENTREGA = "restablece-entrega-key";
 
     public static final String FACTURAS_PARCIALES = "facturas-parciales-key";
     public static final String EMPRESA_MAYORISTA = "03";
     public static final String MOTIVO_RECHAZADO_SELECCIONADO = "motivo-seleccionado-key";
 
     public static final int TIMEOUT = 3600*1000;
+    public static String MOTIVO_RECHAZO_FACTURA_CERRADO = "011";
+    public static String MOTIVO_RECHAZO_FACTURA_SIN_VISITAR = "006";
 }

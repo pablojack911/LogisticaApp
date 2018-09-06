@@ -12,6 +12,7 @@ import com.dynamicsoftware.pocho.logistica.DAO.Contracts.RutaDeEntregaContract;
 import com.dynamicsoftware.pocho.logistica.DAO.DatabaseHelper;
 import com.dynamicsoftware.pocho.logistica.Modelo.BaseModel;
 import com.dynamicsoftware.pocho.logistica.Modelo.ESTADO_ENTREGA;
+import com.dynamicsoftware.pocho.logistica.Modelo.Factura;
 import com.dynamicsoftware.pocho.logistica.Modelo.ItemFactura;
 
 import java.util.ArrayList;
@@ -32,12 +33,7 @@ public class ControladoraItemFactura extends Controladora
     public Cursor obtenerCursorMercaderiaEnCamion(String usuario)
     {
         SQLiteDatabase db = helper.getReadableDatabase();
-        String query = "select " + ItemFacturaContract.ItemFactura._ARTICULO + ", " + ItemFacturaContract.ItemFactura._DESCRIPCION + ", sum(abs(" + ItemFacturaContract.ItemFactura._CANTIDAD + "))" +
-                " from " + ItemFacturaContract.ItemFactura.TABLE_NAME + " itf" +
-                " inner join " + FacturaContract.Factura.TABLE_NAME + " f on f." + FacturaContract.Factura._ID + "=itf." + ItemFacturaContract.ItemFactura._FACTURA_ID +
-                " inner join " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME + " ruta on ruta." + RutaDeEntregaContract.RutaDeEntrega._CLIENTE + "=f." + FacturaContract.Factura._CLIENTE +
-                " where ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "<>? and ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "<>? and (f." + FacturaContract.Factura._CODIGO_RECHAZO + "<>? or itf." + ItemFacturaContract.ItemFactura._MOTIVO_RECHAZO + "<>?) and ruta." + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=? and itf." + ItemFacturaContract.ItemFactura._ARTICULO + "<>?" +
-                " group by " + ItemFacturaContract.ItemFactura._ARTICULO;
+        String query = "select " + ItemFacturaContract.ItemFactura._ARTICULO + ", " + ItemFacturaContract.ItemFactura._DESCRIPCION + ", sum(abs(" + ItemFacturaContract.ItemFactura._CANTIDAD + "))" + " from " + ItemFacturaContract.ItemFactura.TABLE_NAME + " itf" + " inner join " + FacturaContract.Factura.TABLE_NAME + " f on f." + FacturaContract.Factura._ID + "=itf." + ItemFacturaContract.ItemFactura._FACTURA_ID + " inner join " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME + " ruta on ruta." + RutaDeEntregaContract.RutaDeEntrega._CLIENTE + "=f." + FacturaContract.Factura._CLIENTE + " where ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "<>? and ruta." + RutaDeEntregaContract.RutaDeEntrega._ESTADO + "<>? and (f." + FacturaContract.Factura._CODIGO_RECHAZO + "<>? or itf." + ItemFacturaContract.ItemFactura._MOTIVO_RECHAZO + "<>?) and ruta." + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=? and itf." + ItemFacturaContract.ItemFactura._ARTICULO + "<>?" + " group by " + ItemFacturaContract.ItemFactura._ARTICULO;
         String[] args = {String.valueOf(ESTADO_ENTREGA.A_VISITAR.ordinal()), String.valueOf(ESTADO_ENTREGA.VOLVER_LUEGO.ordinal()), "", "", usuario, "0000000000001"};
         return db.rawQuery(query, args);
     }
@@ -93,45 +89,6 @@ public class ControladoraItemFactura extends Controladora
         return -1;
     }
 
-    public long insertOrUpdate(ItemFactura itemFactura)
-    {
-        long ok = -1;
-        try
-        {
-            String selection = ItemFacturaContract.ItemFactura._FACTURA_ID + " =? and " +
-                    ItemFacturaContract.ItemFactura._ARTICULO + "=? and " +
-                    ItemFacturaContract.ItemFactura._PRECIO_FINAL_UNITARIO + "=? and " +
-                    ItemFacturaContract.ItemFactura._DESCUENTO_1 + "=? and " +
-                    ItemFacturaContract.ItemFactura._DESCUENTO_2 + "=? and " +
-                    ItemFacturaContract.ItemFactura._DESCUENTO_3 + "=? and " +
-                    ItemFacturaContract.ItemFactura._DESCUENTO_4 + "=?";
-            //TODO: agregar filtro por dtos y precio
-            String[] selectionArgs = {String.valueOf(itemFactura.getFactura()),
-                                      itemFactura.getArticulo(),
-                                      String.valueOf(itemFactura.getPrecioFinalUnitario()),
-                                      String.valueOf(itemFactura.getDescuento1()),
-                                      String.valueOf(itemFactura.getDescuento2()),
-                                      String.valueOf(itemFactura.getDescuento3()),
-                                      String.valueOf(itemFactura.getDescuento4())};
-            Cursor cursor = obtenerCursor(selection, selectionArgs);
-            if (cursor.moveToNext())
-            {
-                Log.d("update-item", String.valueOf(actualizar(itemFactura)));
-                ok = cursor.getInt(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._ID));
-            }
-            else
-            {
-                ok = insertar(itemFactura);
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.e(TAG, ex.getLocalizedMessage());
-            ex.printStackTrace();
-        }
-        return ok;
-    }
-
     @Override
     public int actualizar(BaseModel item)
     {
@@ -163,26 +120,7 @@ public class ControladoraItemFactura extends Controladora
     protected String[] crearProyeccionColumnas()
     {
         return new String[]{
-                ItemFacturaContract.ItemFactura._ID,
-                ItemFacturaContract.ItemFactura._ARTICULO,
-                ItemFacturaContract.ItemFactura._CANTIDAD,
-                ItemFacturaContract.ItemFactura._UNIDADES_POR_BULTO,
-                ItemFacturaContract.ItemFactura._CODIGO_BARRA_BULTO,
-                ItemFacturaContract.ItemFactura._CODIGO_BARRA_UNIDAD,
-                ItemFacturaContract.ItemFactura._DESCRIPCION,
-                ItemFacturaContract.ItemFactura._MOTIVO_RECHAZO,
-                ItemFacturaContract.ItemFactura._DESCUENTO_1,
-                ItemFacturaContract.ItemFactura._DESCUENTO_2,
-                ItemFacturaContract.ItemFactura._DESCUENTO_3,
-                ItemFacturaContract.ItemFactura._DESCUENTO_4,
-                ItemFacturaContract.ItemFactura._FACTURA_ID,
-                ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO,
-                ItemFacturaContract.ItemFactura._MINIMO_VENTA,
-                ItemFacturaContract.ItemFactura._IMPORTE_FINAL,
-                ItemFacturaContract.ItemFactura._IMPUESTO_INTERNO_UNITARIO,
-                ItemFacturaContract.ItemFactura._PRECIO_FINAL_UNITARIO,
-                ItemFacturaContract.ItemFactura._PRECIO_NETO_UNITARIO,
-                ItemFacturaContract.ItemFactura._TASA_IVA
+                ItemFacturaContract.ItemFactura._ID, ItemFacturaContract.ItemFactura._ARTICULO, ItemFacturaContract.ItemFactura._CANTIDAD, ItemFacturaContract.ItemFactura._UNIDADES_POR_BULTO, ItemFacturaContract.ItemFactura._CODIGO_BARRA_BULTO, ItemFacturaContract.ItemFactura._CODIGO_BARRA_UNIDAD, ItemFacturaContract.ItemFactura._DESCRIPCION, ItemFacturaContract.ItemFactura._MOTIVO_RECHAZO, ItemFacturaContract.ItemFactura._DESCUENTO_1, ItemFacturaContract.ItemFactura._DESCUENTO_2, ItemFacturaContract.ItemFactura._DESCUENTO_3, ItemFacturaContract.ItemFactura._DESCUENTO_4, ItemFacturaContract.ItemFactura._FACTURA_ID, ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO, ItemFacturaContract.ItemFactura._MINIMO_VENTA, ItemFacturaContract.ItemFactura._IMPORTE_FINAL, ItemFacturaContract.ItemFactura._IMPUESTO_INTERNO_UNITARIO, ItemFacturaContract.ItemFactura._PRECIO_FINAL_UNITARIO, ItemFacturaContract.ItemFactura._PRECIO_NETO_UNITARIO, ItemFacturaContract.ItemFactura._TASA_IVA
         };
     }
 
@@ -213,20 +151,46 @@ public class ControladoraItemFactura extends Controladora
         return contentValues;
     }
 
+    @Override
+    protected int limpiar()
+    {
+        return 0;
+    }
+
+    public long insertOrUpdate(ItemFactura itemFactura)
+    {
+        long ok = -1;
+        try
+        {
+            String selection = ItemFacturaContract.ItemFactura._FACTURA_ID + " =? and " + ItemFacturaContract.ItemFactura._ARTICULO + "=? and " + ItemFacturaContract.ItemFactura._PRECIO_FINAL_UNITARIO + "=? and " + ItemFacturaContract.ItemFactura._DESCUENTO_1 + "=? and " + ItemFacturaContract.ItemFactura._DESCUENTO_2 + "=? and " + ItemFacturaContract.ItemFactura._DESCUENTO_3 + "=? and " + ItemFacturaContract.ItemFactura._DESCUENTO_4 + "=?";
+            //TODO: agregar filtro por dtos y precio
+            String[] selectionArgs = {String.valueOf(itemFactura.getFactura()), itemFactura.getArticulo(), String.valueOf(itemFactura.getPrecioFinalUnitario()), String.valueOf(itemFactura.getDescuento1()), String.valueOf(itemFactura.getDescuento2()), String.valueOf(itemFactura.getDescuento3()), String.valueOf(itemFactura.getDescuento4())};
+            Cursor cursor = obtenerCursor(selection, selectionArgs);
+            if (cursor.moveToNext())
+            {
+                Log.d("update-item", String.valueOf(actualizar(itemFactura)));
+                ok = cursor.getInt(cursor.getColumnIndexOrThrow(ItemFacturaContract.ItemFactura._ID));
+            }
+            else
+            {
+                ok = insertar(itemFactura);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG, ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return ok;
+    }
+
     public int limpiar(String usuario)
     {
         try
         {
             int total = 0;
             SQLiteDatabase db = helper.getReadableDatabase();
-            String query = "DELETE FROM " + ItemFacturaContract.ItemFactura.TABLE_NAME +
-                    " WHERE " + ItemFacturaContract.ItemFactura._FACTURA_ID + " IN" +
-                    " (SELECT " + FacturaContract.Factura._ID +
-                    " FROM " + FacturaContract.Factura.TABLE_NAME +
-                    " WHERE " + FacturaContract.Factura._CLIENTE + " IN" +
-                    " (SELECT DISTINCT " + RutaDeEntregaContract.RutaDeEntrega._CLIENTE +
-                    " FROM " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME +
-                    " WHERE " + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?))";
+            String query = "DELETE FROM " + ItemFacturaContract.ItemFactura.TABLE_NAME + " WHERE " + ItemFacturaContract.ItemFactura._FACTURA_ID + " IN" + " (SELECT " + FacturaContract.Factura._ID + " FROM " + FacturaContract.Factura.TABLE_NAME + " WHERE " + FacturaContract.Factura._CLIENTE + " IN" + " (SELECT DISTINCT " + RutaDeEntregaContract.RutaDeEntrega._CLIENTE + " FROM " + RutaDeEntregaContract.RutaDeEntrega.TABLE_NAME + " WHERE " + RutaDeEntregaContract.RutaDeEntrega._FLETERO + "=?))";
             String[] args = {usuario};
             Cursor cursor = db.rawQuery(query, args);
             if (cursor.moveToNext())
@@ -244,14 +208,26 @@ public class ControladoraItemFactura extends Controladora
         return 0;
     }
 
-    @Override
-    protected int limpiar()
+    public int actualizarMotivoRechazo(int idFactura, String codigoMotivoRechazo)
     {
         return 0;
     }
 
-    public int actualizarMotivoRechazo(int idFactura, String codigoMotivoRechazo)
+
+    public int limpiarRechazos(Factura fac)
     {
-        return 0;
+        try
+        {
+            String where = ItemFacturaContract.ItemFactura._ID_ROW_REF_RECHAZO + " > ? AND " + ItemFacturaContract.ItemFactura._FACTURA_ID + "=?";
+            String[] args = {String.valueOf(0), String.valueOf(fac.getId())};
+            limpiar(ItemFacturaContract.ItemFactura.TABLE_NAME, where, args);
+            //TODO: actualizar todos los items y setear _idrowref=0 y motivo rechazo=''
+        }
+        catch (Exception ex)
+        {
+            Log.e(TAG, ex.getLocalizedMessage());
+            ex.printStackTrace();
+        }
+        return -1;
     }
 }

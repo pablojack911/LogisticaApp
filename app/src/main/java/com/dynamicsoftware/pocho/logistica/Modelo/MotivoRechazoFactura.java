@@ -24,6 +24,7 @@ public class MotivoRechazoFactura extends BaseModel
     };
     private String codigo;
     private String descripcion;
+    private int prioridad;
 
     public MotivoRechazoFactura()
     {
@@ -34,6 +35,7 @@ public class MotivoRechazoFactura extends BaseModel
         super(in);
         codigo = in.readString();
         descripcion = in.readString();
+        prioridad = in.readInt();
     }
 
     public String getCodigo()
@@ -65,14 +67,25 @@ public class MotivoRechazoFactura extends BaseModel
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
-        super.writeToParcel(dest,flags);
+        super.writeToParcel(dest, flags);
         dest.writeString(codigo);
         dest.writeString(descripcion);
+        dest.writeInt(prioridad);
     }
 
     @Override
     public String toString()
     {
         return descripcion;
+    }
+
+    public int getPrioridad()
+    {
+        return prioridad;
+    }
+
+    public void setPrioridad(int prioridad)
+    {
+        this.prioridad = prioridad;
     }
 }

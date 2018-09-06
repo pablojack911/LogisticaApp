@@ -30,7 +30,7 @@ public class ControladoraPosGPS extends Controladora
     public ControladoraPosGPS(Context context)
     {
         helper = DatabaseHelper.getInstance(context);
-        this.contextGps=context;
+        this.contextGps = context;
     }
 
     public ArrayList<PosGPS> obtenerPosicionesPendientes()
@@ -40,26 +40,46 @@ public class ControladoraPosGPS extends Controladora
         return obtenerPosiciones(where, args);
     }
 
+    public PosGPS obtenerUltimaPosicion(String usuario)
+    {
+        String where = PosGPSContract.PosGPS._USUARIO + "= ? ";
+        String[] args = {String.valueOf(usuario)};
+        String sortOrder = PosGPSContract.PosGPS._ID + " DESC";
+        Cursor cursor = obtenerCursor(where, args, sortOrder);
+        if(cursor.moveToNext())
+        {
+            PosGPS posGPS = (PosGPS) parseObjectFromCursor(cursor);
+            cursor.close();
+            return posGPS;
+        }
+        return null;
+    }
+
     private ArrayList<PosGPS> obtenerPosiciones(String where, String[] args)
     {
         Cursor cursor = this.obtenerCursor(where, args);
         ArrayList<PosGPS> posGPSArrayList = new ArrayList<>();
         while (cursor.moveToNext())
         {
-            PosGPS mPosGPS = new PosGPS();
-            mPosGPS.setId(cursor.getInt(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._ID)));
-            mPosGPS.setUsuario(cursor.getString(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._USUARIO)));
-            mPosGPS.setCliente(cursor.getString(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._CLIENTE)));
-            mPosGPS.setEstadoEntrega(ESTADO_ENTREGA.parse(cursor.getInt(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._ESTADO))));
-            mPosGPS.setFecha(Fecha.convertir(cursor.getString(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._FECHA))));
-            mPosGPS.setLatitud(cursor.getFloat(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._LATITUD)));
-            mPosGPS.setLongitud(cursor.getFloat(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._LONGITUD)));
-            mPosGPS.setEnviado(cursor.getInt(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._ENVIADO)));
-
+            PosGPS mPosGPS = (PosGPS) parseObjectFromCursor(cursor);
             posGPSArrayList.add(mPosGPS);
         }
         cursor.close();
         return posGPSArrayList;
+    }
+
+    private Object parseObjectFromCursor(Cursor cursor)
+    {
+        PosGPS mPosGPS = new PosGPS();
+        mPosGPS.setId(cursor.getInt(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._ID)));
+        mPosGPS.setUsuario(cursor.getString(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._USUARIO)));
+        mPosGPS.setCliente(cursor.getString(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._CLIENTE)));
+        mPosGPS.setEstadoEntrega(ESTADO_ENTREGA.parse(cursor.getInt(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._ESTADO))));
+        mPosGPS.setFecha(Fecha.convertir(cursor.getString(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._FECHA))));
+        mPosGPS.setLatitud(cursor.getFloat(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._LATITUD)));
+        mPosGPS.setLongitud(cursor.getFloat(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._LONGITUD)));
+        mPosGPS.setEnviado(cursor.getInt(cursor.getColumnIndexOrThrow(PosGPSContract.PosGPS._ENVIADO)));
+        return mPosGPS;
     }
 
     public void creaIntentGrabar(String cliente, String usuario, ESTADO_ENTREGA estadoEntrega)
@@ -70,6 +90,7 @@ public class ControladoraPosGPS extends Controladora
         pos.setEstadoEntrega(estadoEntrega);
         pos.setFecha(new Date(0)); //sino palma
         Intent mServiceIntent = new Intent(contextGps, GPSIntentService.class);
+//        Intent mServiceIntent = new Intent(contextGps, GpsPositionIntentService.class);
         mServiceIntent.putExtra(CONSTANTES.POSICION_GPS_KEY, pos);
         contextGps.startService(mServiceIntent);
     }
@@ -132,10 +153,18 @@ public class ControladoraPosGPS extends Controladora
         return -1;
     }
 
+    public Cursor obtenerCursor(String where, String[] args, String sortOrder)
+    {
+        if (sortOrder.equals(""))
+        {
+            sortOrder = PosGPSContract.PosGPS._ID + " ASC";
+        }
+        return obtenerCursor(PosGPSContract.PosGPS.TABLE_NAME, crearProyeccionColumnas(), where, args, sortOrder);
+    }
+
     protected Cursor obtenerCursor(String where, String[] args)
     {
-        String sortOrder = PosGPSContract.PosGPS._ID + " ASC";
-        return obtenerCursor(PosGPSContract.PosGPS.TABLE_NAME, crearProyeccionColumnas(), where, args, sortOrder);
+        return obtenerCursor(where, args, "");
     }
 
     @Override

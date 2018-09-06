@@ -63,6 +63,7 @@ public class CreateTables
     public static String MotivoRechazoFactura = "CREATE TABLE " + MotivoRechazoFacturaContract.MotivoRechazoFactura.TABLE_NAME + " (" +
             MotivoRechazoFacturaContract.MotivoRechazoFactura._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
             MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO + " text, " +
+            MotivoRechazoFacturaContract.MotivoRechazoFactura._PRIORIDAD + " int, " +
             MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION + " text)";
 
     public static String ItemFactura = "CREATE TABLE " + ItemFacturaContract.ItemFactura.TABLE_NAME + " (" +

@@ -81,10 +81,10 @@ public class LoginActivity extends AppCompatActivity
         }
         mControladoraUsuarios = new ControladoraUsuarios(LoginActivity.this);
         // Set up the login form.
-        mUsuario = (EditText) findViewById(R.id.usuario);
+        mUsuario = findViewById(R.id.usuario);
 //        populateAutoComplete();
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener()
         {
             @Override
@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener()
         {
             @Override
@@ -124,6 +124,7 @@ public class LoginActivity extends AppCompatActivity
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)
                     {
                         startService(new Intent(this, GPSLocationServiceDos.class));
+                        //TODO: iniciar un broadcaster que cada cierto tiempo lance una creación de posgps
                     }
                     else
                     {

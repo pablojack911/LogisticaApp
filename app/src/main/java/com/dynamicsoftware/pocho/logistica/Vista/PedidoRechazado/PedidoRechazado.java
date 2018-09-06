@@ -41,7 +41,7 @@ public class PedidoRechazado extends AppCompatActivity
         cliente = intent.getStringExtra(CONSTANTES.CLIENTE);
         nombreCliente = intent.getStringExtra(CONSTANTES.NOMBRE_CLIENTE);
         controladoraMotivoRechazoFactura = new ControladoraMotivoRechazoFactura(PedidoRechazado.this);
-        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos(null, null);
+        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos();
         bindUI();
     }
 
@@ -77,7 +77,7 @@ public class PedidoRechazado extends AppCompatActivity
 
     private void bindUI()
     {
-        lvMotivos = (ListView) findViewById(R.id.lv_motivos);
+        lvMotivos = findViewById(R.id.lv_motivos);
         adapter = new MotivoRechazoFacturaSingleChoiceItemAdapter(motivoRechazoFacturas, PedidoRechazado.this);
         lvMotivos.setAdapter(adapter);
         lvMotivos.setOnItemClickListener(new AdapterView.OnItemClickListener()

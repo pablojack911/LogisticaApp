@@ -61,34 +61,10 @@ public class ControladoraMotivoRechazoFactura extends Controladora
         return -1;
     }
 
-    public ArrayList<MotivoRechazoFactura> obtenerMotivos(String where, String[] args)
-    {
-//        String where = null;
-//        String[] args = null;
-        Cursor cursor = this.obtenerCursor(where, args);
-        ArrayList<MotivoRechazoFactura> facturaArrayList = new ArrayList<>();
-        while (cursor.moveToNext())
-        {
-            MotivoRechazoFactura motivoRechazoFactura = new MotivoRechazoFactura();
-            motivoRechazoFactura.setId(cursor.getInt(cursor.getColumnIndexOrThrow(MotivoRechazoFacturaContract.MotivoRechazoFactura._ID)));
-            motivoRechazoFactura.setCodigo(cursor.getString(cursor.getColumnIndexOrThrow(MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO)));
-            motivoRechazoFactura.setDescripcion(cursor.getString(cursor.getColumnIndexOrThrow(MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION)));
-            facturaArrayList.add(motivoRechazoFactura);
-        }
-        cursor.close();
-        return facturaArrayList;
-    }
-
-
-    public Cursor obtenerCursorMotivos()
-    {
-        return obtenerCursor(null, null);
-    }
-
     @Override
     protected Cursor obtenerCursor(String where, String[] args)
     {
-        String sortOrder = MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION + " ASC";
+        String sortOrder = MotivoRechazoFacturaContract.MotivoRechazoFactura._PRIORIDAD + " ASC";
         return obtenerCursor(MotivoRechazoFacturaContract.MotivoRechazoFactura.TABLE_NAME, crearProyeccionColumnas(), where, args, sortOrder);
     }
 
@@ -96,9 +72,7 @@ public class ControladoraMotivoRechazoFactura extends Controladora
     protected String[] crearProyeccionColumnas()
     {
         return new String[]{
-                MotivoRechazoFacturaContract.MotivoRechazoFactura._ID,
-                MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO,
-                MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION
+                MotivoRechazoFacturaContract.MotivoRechazoFactura._ID, MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO, MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION, MotivoRechazoFacturaContract.MotivoRechazoFactura._PRIORIDAD
         };
     }
 
@@ -110,6 +84,7 @@ public class ControladoraMotivoRechazoFactura extends Controladora
         contentValues.put(MotivoRechazoFacturaContract.MotivoRechazoFactura._ID, motivoRechazoFactura.getId());
         contentValues.put(MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO, motivoRechazoFactura.getCodigo());
         contentValues.put(MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION, motivoRechazoFactura.getDescripcion());
+        contentValues.put(MotivoRechazoFacturaContract.MotivoRechazoFactura._PRIORIDAD, motivoRechazoFactura.getPrioridad());
         return contentValues;
     }
 
@@ -117,6 +92,28 @@ public class ControladoraMotivoRechazoFactura extends Controladora
     protected int limpiar()
     {
         return 0;
+    }
+
+    private ArrayList<MotivoRechazoFactura> obtenerMotivos(String where, String[] args)
+    {
+        Cursor cursor = this.obtenerCursor(where, args);
+        ArrayList<MotivoRechazoFactura> motivoRechazoFacturaArrayList = new ArrayList<>();
+        while (cursor.moveToNext())
+        {
+            MotivoRechazoFactura motivoRechazoFactura = new MotivoRechazoFactura();
+            motivoRechazoFactura.setId(cursor.getInt(cursor.getColumnIndexOrThrow(MotivoRechazoFacturaContract.MotivoRechazoFactura._ID)));
+            motivoRechazoFactura.setCodigo(cursor.getString(cursor.getColumnIndexOrThrow(MotivoRechazoFacturaContract.MotivoRechazoFactura._CODIGO)));
+            motivoRechazoFactura.setDescripcion(cursor.getString(cursor.getColumnIndexOrThrow(MotivoRechazoFacturaContract.MotivoRechazoFactura._DESCRIPCION)));
+            motivoRechazoFactura.setPrioridad(cursor.getInt(cursor.getColumnIndexOrThrow(MotivoRechazoFacturaContract.MotivoRechazoFactura._PRIORIDAD)));
+            motivoRechazoFacturaArrayList.add(motivoRechazoFactura);
+        }
+        cursor.close();
+        return motivoRechazoFacturaArrayList;
+    }
+
+    public Cursor obtenerCursorMotivos()
+    {
+        return obtenerCursor(null, null);
     }
 
     public String obtenerMotivo(String codigoRechazo)
@@ -130,5 +127,10 @@ public class ControladoraMotivoRechazoFactura extends Controladora
             motivo = motivos.get(0).getDescripcion();
         }
         return motivo;
+    }
+
+    public ArrayList<MotivoRechazoFactura> obtenerMotivos()
+    {
+        return obtenerMotivos(null, null);
     }
 }

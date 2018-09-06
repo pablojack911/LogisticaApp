@@ -72,7 +72,7 @@ public class ActivityListadoFactura extends AppCompatActivity implements DialogI
         controladoraFacturas = new ControladoraFacturas(ActivityListadoFactura.this);
         controladoraMotivoRechazoFactura = new ControladoraMotivoRechazoFactura(ActivityListadoFactura.this);
         controladoraItemFactura = new ControladoraItemFactura(ActivityListadoFactura.this);
-        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos(null, null);
+        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos();
         mFacturas = controladoraFacturas.obtenerFacturas(cliente);
         for (Factura factura : mFacturas)
         {
@@ -86,8 +86,8 @@ public class ActivityListadoFactura extends AppCompatActivity implements DialogI
     private void bindUI()
     {
         setTitle(cliente + " - " + nombreCliente);
-        no_hay_datos = (TextView) findViewById(R.id.no_hay_datos);
-        lv = (ExpandableListView) findViewById(R.id.list_facturas);
+        no_hay_datos = findViewById(R.id.no_hay_datos);
+        lv = findViewById(R.id.list_facturas);
         configuraListView();
     }
 
@@ -197,18 +197,18 @@ public class ActivityListadoFactura extends AppCompatActivity implements DialogI
 
         builder.setTitle("Rechaza item");
 
-        EditText etCodigoArticulo = (EditText) view.findViewById(R.id.etCodigoArticulo);
-        EditText etDescripcion = (EditText) view.findViewById(R.id.etDescripcion);
-        final EditText etDescuento1 = (EditText) view.findViewById(R.id.etDescuento1);
-        EditText etDescuento2 = (EditText) view.findViewById(R.id.etDescuento2);
-        EditText etDescuento3 = (EditText) view.findViewById(R.id.etDescuento3);
-        EditText etDescuento4 = (EditText) view.findViewById(R.id.etDescuento4);
-        EditText etCantidad = (EditText) view.findViewById(R.id.etCantidad);
+        EditText etCodigoArticulo = view.findViewById(R.id.etCodigoArticulo);
+        EditText etDescripcion = view.findViewById(R.id.etDescripcion);
+        final EditText etDescuento1 = view.findViewById(R.id.etDescuento1);
+        EditText etDescuento2 = view.findViewById(R.id.etDescuento2);
+        EditText etDescuento3 = view.findViewById(R.id.etDescuento3);
+        EditText etDescuento4 = view.findViewById(R.id.etDescuento4);
+        EditText etCantidad = view.findViewById(R.id.etCantidad);
 
-        final com.travijuu.numberpicker.library.NumberPicker etCantidadRechazada = (com.travijuu.numberpicker.library.NumberPicker) view.findViewById(R.id.etCantidadRechazada);
-        final EditText etPrecioFinal = (EditText) view.findViewById(R.id.etPrecioFinal);
-        EditText etPrecioUnitarioFinal = (EditText) view.findViewById(R.id.etPrecioUnitarioFinal);
-        Spinner spMotivosRechazo = (Spinner) view.findViewById(R.id.spMotivosRechazo);
+        final com.travijuu.numberpicker.library.NumberPicker etCantidadRechazada = view.findViewById(R.id.etCantidadRechazada);
+        final EditText etPrecioFinal = view.findViewById(R.id.etPrecioFinal);
+        EditText etPrecioUnitarioFinal = view.findViewById(R.id.etPrecioUnitarioFinal);
+        Spinner spMotivosRechazo = view.findViewById(R.id.spMotivosRechazo);
 
         etCodigoArticulo.setText(itemFactura.getArticulo());
         etDescripcion.setText(itemFactura.getDescripcion());
@@ -323,19 +323,19 @@ public class ActivityListadoFactura extends AppCompatActivity implements DialogI
 
         builder.setTitle("Rechaza item mayorista");
 
-        EditText etCodigoArticulo = (EditText) view.findViewById(R.id.etCodigoArticulo);
-        EditText etDescripcion = (EditText) view.findViewById(R.id.etDescripcion);
-        final EditText etDescuento1 = (EditText) view.findViewById(R.id.etDescuento1);
-        EditText etDescuento2 = (EditText) view.findViewById(R.id.etDescuento2);
-        EditText etDescuento3 = (EditText) view.findViewById(R.id.etDescuento3);
-        EditText etDescuento4 = (EditText) view.findViewById(R.id.etDescuento4);
-        final EditText etCantidadBultosOriginal = (EditText) view.findViewById(R.id.etCantidadBultosOriginal);
-        EditText etCantidadUnidadesOriginal = (EditText) view.findViewById(R.id.etCantidadUnidadesOriginal);
+        EditText etCodigoArticulo = view.findViewById(R.id.etCodigoArticulo);
+        EditText etDescripcion = view.findViewById(R.id.etDescripcion);
+        final EditText etDescuento1 = view.findViewById(R.id.etDescuento1);
+        EditText etDescuento2 = view.findViewById(R.id.etDescuento2);
+        EditText etDescuento3 = view.findViewById(R.id.etDescuento3);
+        EditText etDescuento4 = view.findViewById(R.id.etDescuento4);
+        final EditText etCantidadBultosOriginal = view.findViewById(R.id.etCantidadBultosOriginal);
+        EditText etCantidadUnidadesOriginal = view.findViewById(R.id.etCantidadUnidadesOriginal);
 
-        final com.travijuu.numberpicker.library.NumberPicker etCantidadBultosRechazados = (com.travijuu.numberpicker.library.NumberPicker) view.findViewById(R.id.etCantidadBultosRechazados);
-        final com.travijuu.numberpicker.library.NumberPicker etCantidadUnidadesRechazadas = (com.travijuu.numberpicker.library.NumberPicker) view.findViewById(R.id.etCantidadUnidadesRechazadas);
-        final EditText etImporteRechazado = (EditText) view.findViewById(R.id.etImporteRechazado);
-        Spinner spMotivosRechazo = (Spinner) view.findViewById(R.id.spMotivosRechazo);
+        final com.travijuu.numberpicker.library.NumberPicker etCantidadBultosRechazados = view.findViewById(R.id.etCantidadBultosRechazados);
+        final com.travijuu.numberpicker.library.NumberPicker etCantidadUnidadesRechazadas = view.findViewById(R.id.etCantidadUnidadesRechazadas);
+        final EditText etImporteRechazado = view.findViewById(R.id.etImporteRechazado);
+        Spinner spMotivosRechazo = view.findViewById(R.id.spMotivosRechazo);
 
         etCodigoArticulo.setText(itemFactura.getArticulo());
         etDescripcion.setText(itemFactura.getDescripcion());

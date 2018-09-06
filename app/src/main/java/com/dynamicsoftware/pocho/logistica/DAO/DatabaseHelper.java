@@ -77,6 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper
             db.execSQL(CreateIndexes.MotivoRechazoFactura_id);
             db.execSQL(CreateIndexes.MotivoRechazoFactura_codigo);
             db.execSQL(CreateIndexes.MotivoRechazoFactura_descripcion);
+            db.execSQL(CreateIndexes.MotivoRechazoFactura_prioridad);
             db.execSQL(MockData.MotivoRechazoFactura);
             //ItemFactura
             db.execSQL(CreateTables.ItemFactura);

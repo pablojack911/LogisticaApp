@@ -25,20 +25,17 @@
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".VisitaCliente"/>
         <activity android:name=".DescargaClientesActivity"/>
 
-        <service android:name=".Services.GPSIntentService"/>
-        <!--<service android:name=".Services.GPSLocationService"/>-->
+        <service android:name=".Services.GPSIntentService" />
         <service android:name=".Services.GPSLocationServiceDos" />
 
         <receiver android:name=".Services.RecieverCall">
             <intent-filter>
-                <action android:name="com.android.techtrainner"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>

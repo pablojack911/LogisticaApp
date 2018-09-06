@@ -11,8 +11,6 @@ import android.util.Log;
 
 import com.dynamicsoftware.pocho.logistica.CONSTANTES;
 import com.dynamicsoftware.pocho.logistica.Controladoras.ControladoraPosGPS;
-import com.dynamicsoftware.pocho.logistica.Controladoras.Fecha;
-import com.dynamicsoftware.pocho.logistica.Controladoras.SaveSharedPreferences;
 import com.dynamicsoftware.pocho.logistica.Modelo.PosGPS;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -31,13 +29,13 @@ import static com.dynamicsoftware.pocho.logistica.CONSTANTES.POSICION_GPS_KEY;
  * Created by pinsua on 08/03/2018.
  */
 
-public class GPSIntentService extends IntentService
+public class GpsPositionIntentService extends IntentService
 {
-    private static final String TAG = "GPSIntentService";
+    private static final String TAG = "GPSPosIntentService";
     FusedLocationProviderClient mFusedLocationClient;
     private ControladoraPosGPS controladorPosicionesGPS;
 
-    public GPSIntentService()
+    public GpsPositionIntentService()
     {
         this(TAG);
     }
@@ -47,10 +45,11 @@ public class GPSIntentService extends IntentService
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public GPSIntentService(String name)
+    public GpsPositionIntentService(String name)
     {
         super(name);
     }
+
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent)
@@ -64,9 +63,8 @@ public class GPSIntentService extends IntentService
         else
         {
             posGPS = new PosGPS();
-            posGPS.setUsuario(SaveSharedPreferences.getUserName(getApplicationContext()));
         }
-        if (ActivityCompat.checkSelfPermission(GPSIntentService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(GPSIntentService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+        if (ActivityCompat.checkSelfPermission(GpsPositionIntentService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(GpsPositionIntentService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
         {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
             mFusedLocationClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>()
@@ -74,27 +72,13 @@ public class GPSIntentService extends IntentService
                 @Override
                 public void onSuccess(Location location)
                 {
-                    if (location != null && location.getLatitude() != 0)
+                    if (location.getLatitude() != 0)
                     {
                         posGPS.setFecha(new Date(location.getTime()));
                         posGPS.setLatitud(Float.valueOf(String.valueOf(location.getLatitude())));
                         posGPS.setLongitud(Float.valueOf(String.valueOf(location.getLongitude())));
+                        controladorPosicionesGPS.insertar(posGPS);
                     }
-                    else
-                    {
-                        PosGPS ultimaGrabada = controladorPosicionesGPS.obtenerUltimaPosicion(posGPS.getUsuario());
-                        if (ultimaGrabada != null)
-                        {
-                            posGPS.setFecha(ultimaGrabada.getFecha());
-                            posGPS.setLongitud(ultimaGrabada.getLongitud());
-                            posGPS.setLatitud(ultimaGrabada.getLatitud());
-                        }
-                        else
-                        {
-                            posGPS.setFecha(Fecha.obtenerFechaHoraActual());
-                        }
-                    }
-                    controladorPosicionesGPS.insertar(posGPS);
                 }
             });
             try
@@ -138,9 +122,9 @@ public class GPSIntentService extends IntentService
         int res = conn.getResponseCode();
         if (res == 200) //OK
         {
-            Log.d(TAG, "Grabando POS en server -> " + res);
+            Log.d(TAG, "Grabando en server -> " + res);
             res = controladorPosicionesGPS.actualizarEnviado(1, posGPS.getId());
-            Log.d(TAG, "Actualizado en SQLite -> " + res + "_" + posGPS.getCliente());
+            Log.d(TAG, "Actualizado en bd -> " + res + "_" + posGPS.getCliente());
         }
     }
 

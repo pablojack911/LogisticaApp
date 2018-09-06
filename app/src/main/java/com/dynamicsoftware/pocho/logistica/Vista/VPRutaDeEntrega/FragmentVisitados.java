@@ -1,5 +1,7 @@
 package com.dynamicsoftware.pocho.logistica.Vista.VPRutaDeEntrega;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +31,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static com.dynamicsoftware.pocho.logistica.CONSTANTES.CAMBIA_ESTADO_ENTREGA;
+import static com.dynamicsoftware.pocho.logistica.CONSTANTES.RESTABLECE_ENTREGA;
 import static com.dynamicsoftware.pocho.logistica.CONSTANTES.RUTA_DE_ENTREGA;
 import static com.dynamicsoftware.pocho.logistica.Controladoras.Utiles.cambiaVisibilidad;
 
@@ -47,6 +50,7 @@ public class FragmentVisitados extends Fragment
     private TextView noHayDatos;
 
     private String usuario;
+    private RutaDeEntrega rutaDeEntrega;
 
     @Nullable
     @Override
@@ -60,19 +64,27 @@ public class FragmentVisitados extends Fragment
         return rootView;
     }
 
-    private void bindUI()
-    {
-        lv = (ListView) rootView.findViewById(R.id.list_ruta_de_venta);
-        lv.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
-        noHayDatos = (TextView) rootView.findViewById(R.id.no_hay_datos);
-        this.configuraListView();
-    }
-
     @Override
     public void onResume()
     {
         super.onResume();
         configuraListView();
+    }
+
+    @Override
+    public void onDestroy()
+    {
+        //        controladoraRutaDeEntrega.cerrar();
+        //        controladoraPosGPS.cerrar();
+        super.onDestroy();
+    }
+
+    private void bindUI()
+    {
+        lv = rootView.findViewById(R.id.list_ruta_de_venta);
+        lv.setChoiceMode(AbsListView.CHOICE_MODE_SINGLE);
+        noHayDatos = rootView.findViewById(R.id.no_hay_datos);
+        this.configuraListView();
     }
 
     private void configuraListView()
@@ -90,11 +102,11 @@ public class FragmentVisitados extends Fragment
                     public void onItemAdded(Object item, View view)
                     {
                         RutaDeEntrega mRuta = (RutaDeEntrega) item;
-                        TextView codigo_cliente = (TextView) view.findViewById(R.id.codigo_cliente);
-                        TextView domicilio = (TextView) view.findViewById(R.id.domicilio_cliente);
-                        TextView efectivo = (TextView) view.findViewById(R.id.text_efectivo);
-                        TextView ctacte = (TextView) view.findViewById(R.id.text_ctacte);
-                        CircleImageView imageView = (CircleImageView) view.findViewById(R.id.img_estado);
+                        TextView codigo_cliente = view.findViewById(R.id.codigo_cliente);
+                        TextView domicilio = view.findViewById(R.id.domicilio_cliente);
+                        TextView efectivo = view.findViewById(R.id.text_efectivo);
+                        TextView ctacte = view.findViewById(R.id.text_ctacte);
+                        CircleImageView imageView = view.findViewById(R.id.img_estado);
                         codigo_cliente.setText(mRuta.getCliente() + " - " + mRuta.getNombre());
                         domicilio.setText(mRuta.getDomicilio());
                         efectivo.setText(String.valueOf(mRuta.getEfectivo()));
@@ -148,18 +160,47 @@ public class FragmentVisitados extends Fragment
                     {
                         if (Utiles.GPSActivado(getActivity()))
                         {
-                            RutaDeEntrega rutaDeEntrega = (RutaDeEntrega) parent.getItemAtPosition(position);
-                            if (rutaDeEntrega.getFinalizado() == 0 && rutaDeEntrega.getEstadoEntrega() != ESTADO_ENTREGA.ENTREGA_PARCIAL)
+                            rutaDeEntrega = (RutaDeEntrega) parent.getItemAtPosition(position);
+                            if (rutaDeEntrega.getFinalizado() == 0)
                             {
-                                Intent intent = new Intent(getContext(), VisitaCliente.class);
-                                intent.putExtra(RUTA_DE_ENTREGA, rutaDeEntrega);
-                                intent.putExtra(CAMBIA_ESTADO_ENTREGA, true);
-                                startActivity(intent);
+                                if (rutaDeEntrega.getEstadoEntrega() == ESTADO_ENTREGA.ENTREGA_PARCIAL)
+                                {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                    builder.setMessage("¿Desea restablecer esta entrega?").setPositiveButton("Si, restablecer", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+                                            Intent intent = new Intent(getContext(), VisitaCliente.class);
+                                            intent.putExtra(RUTA_DE_ENTREGA, rutaDeEntrega);
+                                            intent.putExtra(CAMBIA_ESTADO_ENTREGA, true);
+                                            intent.putExtra(RESTABLECE_ENTREGA, true);
+                                            startActivity(intent);
+                                        }
+                                    }).setNegativeButton("Cancelar", new DialogInterface.OnClickListener()
+                                    {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which)
+                                        {
+
+                                        }
+                                    });
+                                    builder.create().show();
+                                    //TODO: preguntar si desea restablecer la entrega
+
+                                }
+                                else
+                                {
+                                    Intent intent = new Intent(getContext(), VisitaCliente.class);
+                                    intent.putExtra(RUTA_DE_ENTREGA, rutaDeEntrega);
+                                    intent.putExtra(CAMBIA_ESTADO_ENTREGA, true);
+                                    startActivity(intent);
+                                }
                             }
                         }
                         else
                         {
-                            controladoraPosGPS.creaIntentGrabar( "NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
+                            controladoraPosGPS.creaIntentGrabar("NOGPS", usuario, ESTADO_ENTREGA.A_VISITAR);
                             Utiles.displayPromptForEnablingGPS(getActivity());
                         }
                     }
@@ -175,14 +216,6 @@ public class FragmentVisitados extends Fragment
         {
             Log.e(TAG, ex.getLocalizedMessage());
         }
-    }
-
-    @Override
-    public void onDestroy()
-    {
-//        controladoraRutaDeEntrega.cerrar();
-//        controladoraPosGPS.cerrar();
-        super.onDestroy();
     }
 
     public void beginSearch(String query)

@@ -9,33 +9,35 @@
 
     <TextView
         android:id="@+id/tipo_numero"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="FA 0001-0002345"
         android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/pesos"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText"/>
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/pesos"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
+        android:gravity="end"
         android:text="$ 34444.6"
         android:textAppearance="@style/TextAppearance.AppCompat"
         android:textSize="24sp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText"
-        />
+        app:layout_constraintBaseline_toBaselineOf="@+id/tipo_numero"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/pesos_rechazados"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
@@ -45,5 +47,5 @@
         android:textSize="16sp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pesos"
-        tools:ignore="HardcodedText"/>
+        tools:ignore="HardcodedText" />
 </android.support.constraint.ConstraintLayout>

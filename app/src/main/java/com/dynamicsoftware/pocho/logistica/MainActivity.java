@@ -50,14 +50,15 @@ public class MainActivity extends AppCompatActivity
         else
         {
             startService(new Intent(this, GPSLocationServiceDos.class));
+            //TODO: 2 pos? LoginActivity goto 127
         }
         setTitle(getResources().getString(R.string.app_name) + " - " + SaveSharedPreferences.getUserName(MainActivity.this));
 
         mPageAdapter = new PageAdapter_RutaDeEntrega(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.vp_ruta);
+        mViewPager = findViewById(R.id.vp_ruta);
         mViewPager.setAdapter(mPageAdapter);
 
-        TabLayout tabs = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(mViewPager);
     }
 
@@ -71,7 +72,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)
                     {
-                        startService(new Intent(this, GPSLocationServiceDos.class));
+//                        startService(new Intent(this, GPSLocationServiceDos.class));
+                        //TODO: 3 goto LoginActivity 127
                     }
                     else
                     {

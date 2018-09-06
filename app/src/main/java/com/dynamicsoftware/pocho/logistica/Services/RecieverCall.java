@@ -14,7 +14,11 @@ public class RecieverCall extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        Log.i("Service Stops", "Ohhhhhhh");
-        context.startService(new Intent(context, GPSLocationServiceDos.class));
+        if("android.intent.action.BOOT_COMPLETED".equals(intent.getAction()))
+        {
+            Log.i("Service Stops", "Ohhhhhhh");
+            context.startService(new Intent(context, GPSLocationServiceDos.class));
+            //TODO: 4 goto LoginActivity 127
+        }
     }
 }

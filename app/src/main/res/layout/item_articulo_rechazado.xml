@@ -48,9 +48,9 @@
             android:focusable="false"
             android:hint="@string/bultos"
             android:inputType="numberDecimal"
-            android:textAlignment="center"
             android:text="1"
-            tools:ignore="HardcodedText"/>
+            android:textAlignment="center"
+            tools:ignore="HardcodedText" />
     </android.support.design.widget.TextInputLayout>
     <!--<TextView-->
         <!--android:id="@+id/tvImporteFinal"-->

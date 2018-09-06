@@ -1,5 +1,6 @@
 package com.dynamicsoftware.pocho.logistica;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,7 +21,6 @@ import com.dynamicsoftware.pocho.logistica.Controladoras.Utiles;
 import com.dynamicsoftware.pocho.logistica.Modelo.ESTADO_ENTREGA;
 import com.dynamicsoftware.pocho.logistica.Modelo.Factura;
 import com.dynamicsoftware.pocho.logistica.Modelo.ItemFactura;
-import com.dynamicsoftware.pocho.logistica.Modelo.MotivoRechazoFactura;
 import com.dynamicsoftware.pocho.logistica.Modelo.RutaDeEntrega;
 import com.dynamicsoftware.pocho.logistica.Vista.EntregaParcial.ActivityListadoFactura;
 import com.dynamicsoftware.pocho.logistica.Vista.PedidoRechazado.PedidoRechazado;
@@ -33,13 +33,16 @@ import java.util.ArrayList;
 
 import static com.dynamicsoftware.pocho.logistica.CONSTANTES.CAMBIA_ESTADO_ENTREGA;
 import static com.dynamicsoftware.pocho.logistica.CONSTANTES.ID_RUTA_DE_ENTREGA;
+import static com.dynamicsoftware.pocho.logistica.CONSTANTES.MOTIVO_RECHAZO_FACTURA_CERRADO;
+import static com.dynamicsoftware.pocho.logistica.CONSTANTES.MOTIVO_RECHAZO_FACTURA_SIN_VISITAR;
+import static com.dynamicsoftware.pocho.logistica.CONSTANTES.RESTABLECE_ENTREGA;
 import static com.dynamicsoftware.pocho.logistica.CONSTANTES.RUTA_DE_ENTREGA;
 
 public class VisitaCliente extends AppCompatActivity implements View.OnClickListener, DialogInterface.OnDismissListener, AsyncResponse
 {
     private static final String TAG = "VisitaCliente";
     RutaDeEntrega mRutaDeEntrega;
-    ArrayList<MotivoRechazoFactura> motivoRechazoFacturas;
+    //    ArrayList<MotivoRechazoFactura> motivoRechazoFacturas;
 
     ControladoraRutaDeEntrega controladoraRutaDeEntrega;
     ControladoraPosGPS controladoraPosGPS;
@@ -65,19 +68,36 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_visita_cliente);
-        bindUI();
+        controladoraRutaDeEntrega = new ControladoraRutaDeEntrega(VisitaCliente.this);
+        controladoraPosGPS = new ControladoraPosGPS(VisitaCliente.this);
+        controladoraMotivoRechazoFactura = new ControladoraMotivoRechazoFactura(VisitaCliente.this);
+        controladoraFacturas = new ControladoraFacturas(VisitaCliente.this);
+        controladoraItemFactura = new ControladoraItemFactura(VisitaCliente.this);
         usuario = SaveSharedPreferences.getUserName(VisitaCliente.this);
         Intent intent = getIntent();
         if (intent.hasExtra(RUTA_DE_ENTREGA))
         {
             mRutaDeEntrega = intent.getParcelableExtra(RUTA_DE_ENTREGA);
         }
+        bindUI();
         if (intent.hasExtra(CAMBIA_ESTADO_ENTREGA))
         {
             cambiaEstado = intent.getBooleanExtra(CAMBIA_ESTADO_ENTREGA, false);
             if (cambiaEstado)
             {
-                btnVolverLuego.setVisibility(View.GONE);
+                if (intent.hasExtra(RESTABLECE_ENTREGA))
+                {
+                    boolean restableceEntrega = intent.getBooleanExtra(RESTABLECE_ENTREGA, false);
+                    if (restableceEntrega)
+                    {
+                        estadoSeleccionado = ESTADO_ENTREGA.A_VISITAR;
+                        preparaEntrega("", ESTADO_ENTREGA.ENTREGA_TOTAL, true);//mando entrega total aunque en la bd se guarda como A_VISITAR.
+                    }
+                }
+                else
+                {
+                    btnVolverLuego.setVisibility(View.GONE);
+                }
             }
             else
             {
@@ -85,37 +105,39 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
             }
         }
 
-        setTitle(mRutaDeEntrega.getCliente() + " - " + mRutaDeEntrega.getNombre());
 
-        controladoraRutaDeEntrega = new ControladoraRutaDeEntrega(VisitaCliente.this);
-        controladoraPosGPS = new ControladoraPosGPS(VisitaCliente.this);
-        controladoraMotivoRechazoFactura = new ControladoraMotivoRechazoFactura(VisitaCliente.this);
-        controladoraFacturas = new ControladoraFacturas(VisitaCliente.this);
-        controladoraItemFactura = new ControladoraItemFactura(VisitaCliente.this);
+        //        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos(null, null);
+        //        //CHECK IN SE HACE EN FragmentVisitar unicamente
+        //        controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, mRutaDeEntrega.getCliente(), usuario, mRutaDeEntrega.getEstado());
+    }
 
-        progressDialog = new ProgressDialog(VisitaCliente.this);
-        progressDialog.setCancelable(false);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-
-        motivoRechazoFacturas = controladoraMotivoRechazoFactura.obtenerMotivos(null, null);
-//        //CHECK IN SE HACE EN FragmentVisitar unicamente
-//        controladoraPosGPS.creaIntentGrabar(VisitaCliente.this, mRutaDeEntrega.getCliente(), usuario, mRutaDeEntrega.getEstado());
+    @Override
+    protected void onDestroy()
+    {
+        //        controladoraRutaDeEntrega.cerrar();
+        //        controladoraPosGPS.cerrar();
+        dismissProgressDialog();
+        super.onDestroy();
     }
 
     private void bindUI()
     {
-        btnEntregaTotal = (Button) findViewById(R.id.btn_entrega_total);
+        setTitle(mRutaDeEntrega.getCliente() + " - " + mRutaDeEntrega.getNombre());
+        btnEntregaTotal = findViewById(R.id.btn_entrega_total);
         btnEntregaTotal.setOnClickListener(this);
-        btnEntregaParcial = (Button) findViewById(R.id.btn_entrega_parcial);
+        btnEntregaParcial = findViewById(R.id.btn_entrega_parcial);
         btnEntregaParcial.setOnClickListener(this);
-        btnRechazado = (Button) findViewById(R.id.btn_rechazado);
+        btnRechazado = findViewById(R.id.btn_rechazado);
         btnRechazado.setOnClickListener(this);
-        btnCerrado = (Button) findViewById(R.id.btn_cerrado);
+        btnCerrado = findViewById(R.id.btn_cerrado);
         btnCerrado.setOnClickListener(this);
-        btnSinVisitar = (Button) findViewById(R.id.btn_sin_visitar);
+        btnSinVisitar = findViewById(R.id.btn_sin_visitar);
         btnSinVisitar.setOnClickListener(this);
-        btnVolverLuego = (Button) findViewById(R.id.btn_volver_luego);
+        btnVolverLuego = findViewById(R.id.btn_volver_luego);
         btnVolverLuego.setOnClickListener(this);
+        progressDialog = new ProgressDialog(VisitaCliente.this);
+        progressDialog.setCancelable(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
     }
 
     void ActualizaEstado(ESTADO_ENTREGA estado_entrega)
@@ -124,15 +146,6 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         //CHECK OUT
         controladoraPosGPS.creaIntentGrabar(mRutaDeEntrega.getCliente(), usuario, estado_entrega);
         finalizar();
-    }
-
-    @Override
-    protected void onDestroy()
-    {
-//        controladoraRutaDeEntrega.cerrar();
-//        controladoraPosGPS.cerrar();
-        dismissProgressDialog();
-        super.onDestroy();
     }
 
     @Override
@@ -168,10 +181,9 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     {
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
-            String sinVisitar = "006";// 006 - No se pudo llegar con el reparto
             estadoSeleccionado = ESTADO_ENTREGA.SIN_VISITAR;
-            preparaEntrega(sinVisitar, estadoSeleccionado);
-//            ActualizaEstado(ESTADO_ENTREGA.SIN_VISITAR);
+            preparaEntrega(MOTIVO_RECHAZO_FACTURA_SIN_VISITAR, estadoSeleccionado);
+            //            ActualizaEstado(ESTADO_ENTREGA.SIN_VISITAR);
         }
         else
         {
@@ -184,10 +196,9 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     {
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
-            String cerrado = "011"; // 011 - Cerrado
             estadoSeleccionado = ESTADO_ENTREGA.LOCAL_CERRADO;
-            preparaEntrega(cerrado, estadoSeleccionado);
-//            ActualizaEstado(ESTADO_ENTREGA.LOCAL_CERRADO);
+            preparaEntrega(MOTIVO_RECHAZO_FACTURA_CERRADO, estadoSeleccionado);
+            //            ActualizaEstado(ESTADO_ENTREGA.LOCAL_CERRADO);
         }
         else
         {
@@ -203,7 +214,7 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
             //no necesita llamar a preparaEntrega para grabar en detDescarga
             estadoSeleccionado = ESTADO_ENTREGA.ENTREGA_TOTAL;
             preparaEntrega("", estadoSeleccionado);
-//            ActualizaEstado(ESTADO_ENTREGA.ENTREGA_TOTAL);
+            //            ActualizaEstado(ESTADO_ENTREGA.ENTREGA_TOTAL);
         }
         else
         {
@@ -235,42 +246,42 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     {
         if (Utiles.GPSActivado(VisitaCliente.this))
         {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(VisitaCliente.this, android.R.style.Theme_DeviceDefault_Light_NoActionBar);
-//            builder.setTitle(R.string.rechazar_todo);
-//            MotivoRechazoFacturaSingleChoiceItemAdapter motivosAdapter = new MotivoRechazoFacturaSingleChoiceItemAdapter(motivoRechazoFacturas, VisitaCliente.this);
-//            int seleccionado = -1;
-//            builder.setSingleChoiceItems(motivosAdapter, seleccionado, new DialogInterface.OnClickListener()
-//            {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which)
-//                {
-//
-//                }
-//            });
-//            builder.setPositiveButton(R.string.rechazar, new DialogInterface.OnClickListener()
-//            {
-//                public void onClick(DialogInterface dialog, int id)
-//                {
-//                    ListView lw = ((AlertDialog) dialog).getListView();
-//                    MotivoRechazoFactura motivoSeleccionado = (MotivoRechazoFactura) lw.getAdapter().getItem(lw.getCheckedItemPosition());
-//                    if (motivoSeleccionado != null)
-//                    {
-//                        estadoSeleccionado = ESTADO_ENTREGA.RECHAZADO;
-//                        preparaEntrega(motivoSeleccionado.getCodigo(), estadoSeleccionado);
-////                        ActualizaEstado(ESTADO_ENTREGA.RECHAZADO);
-//                    }
-//                }
-//            });
-//            builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener()
-//            {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which)
-//                {
-//                }
-//            });
-//            builder.setOnDismissListener(VisitaCliente.this);
-//            AlertDialog alertDialog = builder.create();
-//            alertDialog.show();
+            //            AlertDialog.Builder builder = new AlertDialog.Builder(VisitaCliente.this, android.R.style.Theme_DeviceDefault_Light_NoActionBar);
+            //            builder.setTitle(R.string.rechazar_todo);
+            //            MotivoRechazoFacturaSingleChoiceItemAdapter motivosAdapter = new MotivoRechazoFacturaSingleChoiceItemAdapter(motivoRechazoFacturas, VisitaCliente.this);
+            //            int seleccionado = -1;
+            //            builder.setSingleChoiceItems(motivosAdapter, seleccionado, new DialogInterface.OnClickListener()
+            //            {
+            //                @Override
+            //                public void onClick(DialogInterface dialog, int which)
+            //                {
+            //
+            //                }
+            //            });
+            //            builder.setPositiveButton(R.string.rechazar, new DialogInterface.OnClickListener()
+            //            {
+            //                public void onClick(DialogInterface dialog, int id)
+            //                {
+            //                    ListView lw = ((AlertDialog) dialog).getListView();
+            //                    MotivoRechazoFactura motivoSeleccionado = (MotivoRechazoFactura) lw.getAdapter().getItem(lw.getCheckedItemPosition());
+            //                    if (motivoSeleccionado != null)
+            //                    {
+            //                        estadoSeleccionado = ESTADO_ENTREGA.RECHAZADO;
+            //                        preparaEntrega(motivoSeleccionado.getCodigo(), estadoSeleccionado);
+            ////                        ActualizaEstado(ESTADO_ENTREGA.RECHAZADO);
+            //                    }
+            //                }
+            //            });
+            //            builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener()
+            //            {
+            //                @Override
+            //                public void onClick(DialogInterface dialog, int which)
+            //                {
+            //                }
+            //            });
+            //            builder.setOnDismissListener(VisitaCliente.this);
+            //            AlertDialog alertDialog = builder.create();
+            //            alertDialog.show();
             Intent intent = new Intent(VisitaCliente.this, PedidoRechazado.class);
             intent.putExtra(CONSTANTES.CLIENTE, mRutaDeEntrega.getCliente());
             intent.putExtra(CONSTANTES.NOMBRE_CLIENTE, mRutaDeEntrega.getNombre());
@@ -283,23 +294,34 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
         }
     }
 
-    void preparaEntrega(String codigoMotivoSeleccionado, ESTADO_ENTREGA estado)
+    void preparaEntrega(String codigoMotivoSeleccionado, ESTADO_ENTREGA estado, Boolean... eliminaRechazos)
     {
         controladoraFacturas.actualizarFacturas(mRutaDeEntrega.getCliente(), codigoMotivoSeleccionado);
         ArrayList<Factura> mFacturas = controladoraFacturas.obtenerFacturas(mRutaDeEntrega.getCliente());
         for (Factura factura : mFacturas)
         {
+            if (eliminaRechazos != null && eliminaRechazos.length > 0 && eliminaRechazos[0])
+            {
+                controladoraItemFactura.limpiarRechazos(factura);
+            }
             ArrayList<ItemFactura> itemFacturaArrayList = controladoraItemFactura.obtenerItemsFactura(factura.getId());
             factura.setItems(itemFacturaArrayList);
         }
         mRutaDeEntrega.setFacturas(mFacturas);
         mRutaDeEntrega.setEstadoEntrega(estado);
+//        if (eliminaRechazos != null && eliminaRechazos.length > 0 && eliminaRechazos[0])
+//        {
+//            for (Factura fac : mRutaDeEntrega.getFacturas())
+//            {
+//                controladoraItemFactura.limpiarRechazos(fac);
+//            }
+//        }
         enviarRechazo();
     }
 
     private void enviarRechazo()
     {
-        new EnviarRechazoAsyncTask(VisitaCliente.this, mRutaDeEntrega, this).execute();
+        new EnviarRechazoAsyncTask(mRutaDeEntrega, this).execute();
     }
 
     @Override
@@ -383,40 +405,16 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
     }
 
 
+    @SuppressLint("StaticFieldLeak")
     private class EnviarRechazoAsyncTask extends AsyncTask<Void, String, Boolean>
     {
-        AsyncResponse delegate = null;
+        AsyncResponse delegate;
         RutaDeEntrega mRutaDeEntrega;
 
-        public EnviarRechazoAsyncTask(VisitaCliente context, RutaDeEntrega rutaDeEntrega, AsyncResponse delegate)
+        EnviarRechazoAsyncTask(RutaDeEntrega rutaDeEntrega, AsyncResponse delegate)
         {
             this.delegate = delegate;
             this.mRutaDeEntrega = rutaDeEntrega;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result)
-        {
-            super.onPostExecute(result);
-            dismissProgressDialog();
-            delegate.processFinish(result);
-            //todo: error cuando intenta hacer dismiss
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values)
-        {
-            if (values.length > 0)
-            {
-                progressDialog.setMessage(values[0]);
-            }
-        }
-
-        @Override
-        protected void onPreExecute()
-        {
-            super.onPreExecute();
-            progressDialog.show();
         }
 
         @Override
@@ -466,6 +464,31 @@ public class VisitaCliente extends AppCompatActivity implements View.OnClickList
                 publishProgress(ex.getLocalizedMessage());
             }
             return res;
+        }
+
+        @Override
+        protected void onPreExecute()
+        {
+            super.onPreExecute();
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result)
+        {
+            super.onPostExecute(result);
+            dismissProgressDialog();
+            delegate.processFinish(result);
+            //todo: error cuando intenta hacer dismiss
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values)
+        {
+            if (values.length > 0)
+            {
+                progressDialog.setMessage(values[0]);
+            }
         }
     }
 }
